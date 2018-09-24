@@ -1,3 +1,3 @@
-venv
-kivy
+venv* 
+kivy 
 .idea
