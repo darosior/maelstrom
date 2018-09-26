@@ -2,28 +2,26 @@ from OpenSSL import crypto
 import sys
 import os
 import time
+import argparse
 
 class App:
     """The main class.
 
     """
-    def __init__(self, *args):
-        # Default settings
-        self.settings = {
-            'host' : '127.0.0.1',
-            'port' : '8002',
-            'certdir' : './certs',
-            'no-ssl' : 'false',
-            'lightningdir' : '~/.lightning',
-            'lightningconf' : ''
-        }
-        # Parsing arguments
-        i = 0
-        for arg in args:
-            for setting in self.settings:
-                if setting == arg[1:] or setting == arg[2:]:
-                    self.settings[setting] = args[i+1]
-            i += 1
+    def __init__(self):
+        # Parsing command-line arguments
+        self.args = self.parse_arguments()
+        if not os.path.isdir(self.args.certdir):
+            print('The certs directory isn\'t reconized, creating it. ({})'.format(self.args.certdir))
+            try:
+                os.makedirs(self.args.certdir)
+            except Exception as e:
+                print(e)
+        if not os.path.isdir(self.args.lndir):
+            print('I was not able to open the lightning directory specified. (default is ~/.lightning)')
+        if self.args.nossl:
+            print('Starting the server without ssl, be carefull of what information is transmitted and on which network..')
+            
         # Setting up for SSL
         print('Generating the certs..')
         # The server's certificate
@@ -37,7 +35,6 @@ class App:
         with open(os.path.join(self.settings.get('certdir'), 'node.key'), 'w') as f:
             f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, self.pk).decode())
             f.close()
-
         # The client's certificate
         pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
         cert_req = self.createCertRequest(pk)
@@ -45,6 +42,16 @@ class App:
         with open(os.path.join(self.settings.get('certdir'), 'client.crt'), 'w') as f:
             f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_client).decode())
             f.close()
+            
+    def parse_arguments():
+        parser = argparse.ArgumentParser(description='Setup a server to connect to remotly access your lightning node.')
+        parser.add_argument('-h', '--host', default='127.0.0.1', help='The interface to run the server on. If set to 0.0.0.0, it will be remotely accessible', dest='host')
+        parser.add_argument('-p', '--port', default='8002', help='Sets the port for the server to be starting on', dest='port')
+        parser.add_argument('-c', '--certdir', default='./certs', help='The directory to put the certificates in.', dest='certdir')
+        parser.add_argument('-n', '--no-ssl', help='If specified, the communication won\'t be encrypted. Be carefull.' dest='nossl')
+        parser.add_argument('-l', '--lightning-dir', default='~/.lightning/', help='Specifies the lightning directory', dest='lndir')
+        parser.add_argument('-lc', '--lightning-conf', help='If set, specifies the conf used by c-lightning', dest='lnconf')
+        return parser.parse_args()
 
     # Taken from https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py
     @staticmethod
