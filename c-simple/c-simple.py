@@ -18,7 +18,8 @@ class App:
             except Exception as e:
                 print(e)
         if not os.path.isdir(self.args.lndir):
-            print('I was not able to open the lightning directory specified. (default is ~/.lightning)')
+            print(self.args.lndir)
+            raise Exception('Couldn\'t open the lightning directory specified. (default is ~/.lightning)')
         if self.args.nossl:
             print('Starting the server without ssl, be carefull of what information is transmitted and on which network..')
             
@@ -29,27 +30,30 @@ class App:
         cert_req = self.createCertRequest(self.pk, 'sha256', C='BI', ST='Bitcoin', L='Lightning',\
                                           O='C-lightning', OU='c-simple')
         self.cert_server = self.createCertificate(cert_req, (None, self.pk), 1000, (int(time.time()), int(time.time())+365*24*3600))
-        with open(os.path.join(self.settings.get('certdir'), 'node.crt'), 'w') as f:
+        with open(os.path.join(self.args.certdir, 'node.crt'), 'w') as f:
             f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_server).decode())
             f.close()
-        with open(os.path.join(self.settings.get('certdir'), 'node.key'), 'w') as f:
+        with open(os.path.join(self.args.certdir, 'node.key'), 'w') as f:
             f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, self.pk).decode())
             f.close()
         # The client's certificate
         pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
         cert_req = self.createCertRequest(pk)
         self.cert_client = self.createCertificate(cert_req, (None, pk), 1000, (int(time.time()), int(time.time())+365*24*3600))
-        with open(os.path.join(self.settings.get('certdir'), 'client.crt'), 'w') as f:
+        with open(os.path.join(self.args.certdir, 'client.crt'), 'w') as f:
             f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_client).decode())
             f.close()
-            
+
+    @staticmethod
     def parse_arguments():
         parser = argparse.ArgumentParser(description='Setup a server to connect to remotly access your lightning node.')
-        parser.add_argument('-h', '--host', default='127.0.0.1', help='The interface to run the server on. If set to 0.0.0.0, it will be remotely accessible', dest='host')
+        parser.add_argument('-i', '--interface', default='127.0.0.1',
+                            help='The interface to run the server on. If set to 0.0.0.0, it will be remotely accessible', dest='host')
         parser.add_argument('-p', '--port', default='8002', help='Sets the port for the server to be starting on', dest='port')
         parser.add_argument('-c', '--certdir', default='./certs', help='The directory to put the certificates in.', dest='certdir')
-        parser.add_argument('-n', '--no-ssl', help='If specified, the communication won\'t be encrypted. Be carefull.' dest='nossl')
-        parser.add_argument('-l', '--lightning-dir', default='~/.lightning/', help='Specifies the lightning directory', dest='lndir')
+        parser.add_argument('-n', '--no-ssl', help='If specified, the communication won\'t be encrypted. Be carefull.', dest='nossl')
+        parser.add_argument('-l', '--lightning-dir', default=os.path.join(os.path.expanduser('~'),'.lightning/'),
+                            help='Specifies the lightning directory', dest='lndir')
         parser.add_argument('-lc', '--lightning-conf', help='If set, specifies the conf used by c-lightning', dest='lnconf')
         return parser.parse_args()
 
@@ -122,6 +126,6 @@ class App:
 
         return cert
 
-a = App(sys.argv)
+a = App()
 
 
