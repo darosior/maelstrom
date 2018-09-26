@@ -30,10 +30,12 @@ Will come when software will be usable.
 
 - [pyopenssl](https://pypi.org/project/pyOpenSSL/)
 - [argparse](https://pypi.org/project/argparse/)
+- [RPyC](https://rpyc.readthedocs.io/en/latest/index.html)
 
 ### Client
 
 - [Kivy](https://kivy.org/doc/stable/installation/installation-linux.html#installation-in-a-virtual-environment)
+- [RPyC](https://rpyc.readthedocs.io/en/latest/index.html)
 
 
 ## Licence

@@ -3,6 +3,9 @@ import sys
 import os
 import time
 import argparse
+from rpyc.utils.authenticators import SSLAuthenticator
+from rpyc.utils.server import ThreadedServer
+from lightningservice import LightningService
 
 class App:
     """The main class."""
@@ -21,9 +24,10 @@ class App:
             raise Exception('Couldn\'t open the lightning directory specified. (default is ~/.lightning)')
         if self.args.nossl:
             print('Starting the server without ssl, be carefull of what information is transmitted and on which network..')
-            
-        # Setting up for SSL
+
+        # Setting up certificates for SSL
         print('Checking the certs..')
+
         # The server's certificate
         if not os.path.isfile(os.path.join(self.args.certdir, 'node.crt')) or self.args.newcerts:
             self.pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
@@ -39,8 +43,11 @@ class App:
                 f.close()
             print('A new server cert (along with a new private key) has been generated in {}'.format(self.args.certdir))
         else:
-            print('A certificate is already present for the server. Start c-simple with the --new-certs argument to \'
-                  'generate new ones.')
+            print('A certificate is already present for the server. Start c-simple with the --new-certs argument to \
+                  generate new ones.')
+        self.server_certfile = os.path.abspath(os.path.join(self.args.certdir, 'node.crt'))
+        self.server_keyfile = os.path.abspath(os.path.join(self.args.certdir, 'node.key'))
+
         # The client's certificate
         if not os.path.isfile(os.path.join(self.args.certdir, 'client.crt')) or self.args.newcerts:
             pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
@@ -56,13 +63,25 @@ class App:
                 f.close()
             print('A new client cert (along with a new private key) has been generated in {}'.format(self.args.certdir))
         else:
-            print('A certificate is already present for the server. Start c-simple with the --new-certs argument to \'
-                  'generate new ones.')
-        # Keeping those files on the node doesn't make any sense
-        print('Please copy {} and {} on the client\'s device and delete them from the server'.format(
-                os.path.abspath(os.path.join(self.args.certdir, 'client.crt')),
-                os.path.abspath(os.path.join(self.args.certdir, 'client.key'))))
+            print('A certificate is already present for the server. Start c-simple with the --new-certs argument to \
+                  generate new ones.')
+        self.client_certfile = os.path.abspath(os.path.join(self.args.certdir, 'client.crt'))
 
+        # It doesn't make any sense to talk about auth if we keep this file on the serv
+        print('Please copy {} on the client\'s device and delete them from the server'.format(
+            os.path.abspath(os.path.join(self.args.certdir, 'client.key'))))
+
+    def run(self):
+        """
+        Starts the server.
+
+        :return:
+        """
+        print('\n\nSetting up the server ..\n')
+        auth = SSLAuthenticator(self.server_keyfile, self.client_certfile)
+        server = ThreadedServer(LightningService, port=int(self.args.port), authenticator=auth)
+        print('Starting it now.')
+        server.start()
 
     @staticmethod
     def parse_arguments():
@@ -162,6 +181,7 @@ class App:
 
         return cert
 
-a = App()
-
+if __name__ == '__main__':
+    app = App()
+    app.run()
 
