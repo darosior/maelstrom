@@ -5,9 +5,8 @@ import time
 import argparse
 
 class App:
-    """The main class.
+    """The main class."""
 
-    """
     def __init__(self):
         # Parsing command-line arguments
         self.args = self.parse_arguments()
@@ -24,37 +23,70 @@ class App:
             print('Starting the server without ssl, be carefull of what information is transmitted and on which network..')
             
         # Setting up for SSL
-        print('Generating the certs..')
+        print('Checking the certs..')
         # The server's certificate
-        self.pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
-        cert_req = self.createCertRequest(self.pk, 'sha256', C='BI', ST='Bitcoin', L='Lightning',\
-                                          O='C-lightning', OU='c-simple')
-        self.cert_server = self.createCertificate(cert_req, (None, self.pk), 1000, (int(time.time()), int(time.time())+365*24*3600))
-        with open(os.path.join(self.args.certdir, 'node.crt'), 'w') as f:
-            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_server).decode())
-            f.close()
-        with open(os.path.join(self.args.certdir, 'node.key'), 'w') as f:
-            f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, self.pk).decode())
-            f.close()
+        if not os.path.isfile(os.path.join(self.args.certdir, 'node.crt')) or self.args.newcerts:
+            self.pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
+            cert_req = self.createCertRequest(self.pk, 'sha256', C='BI', ST='Bitcoin', L='Lightning',\
+                                              O='C-lightning', OU='c-simple')
+            self.cert_server = self.createCertificate(cert_req, (None, self.pk), 1000,
+                                                  (int(time.time()), int(time.time()) + 365 * 24 * 3600))
+            with open(os.path.join(self.args.certdir, 'node.crt'), 'w') as f:
+                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_server).decode())
+                f.close()
+            with open(os.path.join(self.args.certdir, 'node.key'), 'w') as f:
+                f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, self.pk).decode())
+                f.close()
+            print('A new server cert (along with a new private key) has been generated in {}'.format(self.args.certdir))
+        else:
+            print('A certificate is already present for the server. Start c-simple with the --new-certs argument to \'
+                  'generate new ones.')
         # The client's certificate
-        pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
-        cert_req = self.createCertRequest(pk)
-        self.cert_client = self.createCertificate(cert_req, (None, pk), 1000, (int(time.time()), int(time.time())+365*24*3600))
-        with open(os.path.join(self.args.certdir, 'client.crt'), 'w') as f:
-            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_client).decode())
-            f.close()
+        if not os.path.isfile(os.path.join(self.args.certdir, 'client.crt')) or self.args.newcerts:
+            pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
+            cert_req = self.createCertRequest(pk)
+            self.cert_client = self.createCertificate(cert_req, (None, pk), 1000,
+                                                      (int(time.time()), int(time.time()) + 365 * 24 * 3600))
+            with open(os.path.join(self.args.certdir, 'client.crt'), 'w') as f:
+                f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_client).decode())
+                f.close()
+            with open(os.path.join(self.args.certdir, 'client.key'), 'w') as f:
+                f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pk).decode())
+                f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pk).decode())
+                f.close()
+            print('A new client cert (along with a new private key) has been generated in {}'.format(self.args.certdir))
+        else:
+            print('A certificate is already present for the server. Start c-simple with the --new-certs argument to \'
+                  'generate new ones.')
+        # Keeping those files on the node doesn't make any sense
+        print('Please copy {} and {} on the client\'s device and delete them from the server'.format(
+                os.path.abspath(os.path.join(self.args.certdir, 'client.crt')),
+                os.path.abspath(os.path.join(self.args.certdir, 'client.key'))))
+
 
     @staticmethod
     def parse_arguments():
+        """
+        Parses command line arguments with argparse.
+
+        :return: An object containing all arguments and their value.
+        """
         parser = argparse.ArgumentParser(description='Setup a server to connect to remotly access your lightning node.')
         parser.add_argument('-i', '--interface', default='127.0.0.1',
-                            help='The interface to run the server on. If set to 0.0.0.0, it will be remotely accessible', dest='host')
-        parser.add_argument('-p', '--port', default='8002', help='Sets the port for the server to be starting on', dest='port')
-        parser.add_argument('-c', '--certdir', default='./certs', help='The directory to put the certificates in.', dest='certdir')
-        parser.add_argument('-n', '--no-ssl', help='If specified, the communication won\'t be encrypted. Be carefull.', dest='nossl')
+                            help='The interface to run the server on. If set to 0.0.0.0, it will be remotely accessible',
+                            dest='host')
+        parser.add_argument('-p', '--port', default='8002', help='Sets the port for the server to be starting on',
+                            dest='port')
+        parser.add_argument('-c', '--certdir', default='./certs', help='The directory to put the certificates in.',
+                            dest='certdir')
+        parser.add_argument('-n', '--no-ssl', help='If specified, the communication won\'t be encrypted. Be carefull.',
+                            dest='nossl', action='store_true', default=False)
+        parser.add_argument('-g', '--new-certs', help='If specified, new certificate will be generated',
+                            dest='newcerts', action='store_true', default=False)
         parser.add_argument('-l', '--lightning-dir', default=os.path.join(os.path.expanduser('~'),'.lightning/'),
                             help='Specifies the lightning directory', dest='lndir')
-        parser.add_argument('-lc', '--lightning-conf', help='If set, specifies the conf used by c-lightning', dest='lnconf')
+        parser.add_argument('-lc', '--lightning-conf', help='If set, specifies the conf used by c-lightning',
+                            dest='lnconf')
         return parser.parse_args()
 
     # Taken from https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py
@@ -62,9 +94,11 @@ class App:
     def createKeyPair(type, bits):
         """
         Create a public/private key pair.
-        Arguments: type - Key type, must be one of TYPE_RSA and TYPE_DSA
-                   bits - Number of bits to use in the key
-        Returns:   The public/private key pair in a PKey object
+
+        :argument type: - Key type, must be one of TYPE_RSA and TYPE_DSA
+        :argument bits: - Number of bits to use in the key
+
+        :return: The public/private key pair in a PKey object
         """
         pkey = crypto.PKey()
         pkey.generate_key(type, bits)
@@ -74,9 +108,10 @@ class App:
     def createCertRequest(pkey, digest="sha256", **name):
         """
         Create a certificate request.
-        Arguments: pkey   - The key to associate with the request
-                   digest - Digestion method to use for signing, default is sha256
-                   **name - The name of the subject of the request, possible
+
+        :argument pkey:   - The key to associate with the request
+        :argument digest: - Digestion method to use for signing, default is sha256
+        :argument **name: - The name of the subject of the request, possible
                             arguments are:
                               C     - Country name
                               ST    - State or province name
@@ -85,7 +120,8 @@ class App:
                               OU    - Organizational unit name
                               CN    - Common name
                               emailAddress - E-mail address
-        Returns:   The certificate request in an X509Req object
+
+        :return: Certificate request in an X509Req object
         """
         req = crypto.X509Req()
         subj = req.get_subject()
@@ -101,16 +137,16 @@ class App:
     def createCertificate(req, issuerCertKey, serial, validityPeriod, digest="sha256"):
         """
         Generate a certificate given a certificate request.
-        Arguments: req        - Certificate request to use
-                   issuerCert - The certificate of the issuer
-                   issuerKey  - The private key of the issuer
-                   serial     - Serial number for the certificate
-                   notBefore  - Timestamp (relative to now) when the certificate
-                                starts being valid
-                   notAfter   - Timestamp (relative to now) when the certificate
-                                stops being valid
-                   digest     - Digest method to use for signing, default is sha256
-        Returns:   The signed certificate in an X509 object
+
+        :argument req:        - Certificate request to use
+        :argument issuerCert: - The certificate of the issuer
+        :argument issuerKey:  - The private key of the issuer
+        :argument serial:     - Serial number for the certificate
+        :argument notBefore:  - Timestamp (relative to now) when the certificate starts being valid
+        :argument notAfter:   - Timestamp (relative to now) when the certificate stops being valid
+        :argument digest:     - Digest method to use for signing, default is sha256
+
+        :return: The signed certificate in an X509 object
         """
         issuerCert, issuerKey = issuerCertKey
         notBefore, notAfter = validityPeriod
