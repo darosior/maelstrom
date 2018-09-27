@@ -13,8 +13,8 @@
 ## Introduction
 
 C-simple is an easy-to-use and secure mobile interface to C-lightning. It provides basic functionnalities of a wallet : pay, request payment, balance. A two-way certificate authentication is used to connect the client and the lightning node, the communication is encrypted end-to-end.
-> ⚠️ C-simple is still in development and not yet Beta released. It comes without any warranty or guarantee,
-> please use it with care and preferably on testnet or with insignificant amounts.
+> ⚠️ C-simple is still in development and not yet even Beta released. It comes without any warranty
+> or guarantee, please use it with care and preferably on testnet or with insignificant amounts.
 
 ## Server configuration
 
