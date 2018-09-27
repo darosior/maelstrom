@@ -3,7 +3,7 @@ import sys
 import os
 import time
 import argparse
-from rpyc.utils.authenticators import SSLAuthenticator
+from sslauthenticator import SSLAuthenticator
 from rpyc.utils.server import ThreadedServer
 from lightningservice import LightningService
 
@@ -77,7 +77,7 @@ class App:
         :return:
         """
         print('\n\nSetting up the server ..\n')
-        auth = SSLAuthenticator(self.server_keyfile, self.client_certfile)
+        auth = SSLAuthenticator(self.server_keyfile, self.server_certfile)
         server = ThreadedServer(LightningService, port=int(self.args.port), authenticator=auth)
         print('Server started and listening on {}:{}'.format(self.args.interface, self.args.port))
         server.start()

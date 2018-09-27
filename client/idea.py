@@ -16,7 +16,7 @@ def ssl_connect(host, port, server_cert, client_cert, client_key, family=socket.
     s = socket.socket(family, socktype, proto)
     s.settimeout(3)
     s.connect(sockaddr)
-    s2 = context.wrap_socket(s, server_side=False, server_hostname=None, do_handshake_on_connect=False)
+    s2 = context.wrap_socket(s, server_side = False, server_hostname = None, do_handshake_on_connect = False)
     #s2.connect((host, port))
     s2.do_handshake()
     print('\n\n\n', s2.getpeercert())
