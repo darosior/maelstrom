@@ -59,7 +59,6 @@ class App:
                 f.close()
             with open(os.path.join(self.args.certdir, 'client.key'), 'w') as f:
                 f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pk).decode())
-                f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pk).decode())
                 f.close()
             print('A new client cert (along with a new private key) has been generated in {}'.format(self.args.certdir))
         else:
@@ -80,7 +79,7 @@ class App:
         print('\n\nSetting up the server ..\n')
         auth = SSLAuthenticator(self.server_keyfile, self.client_certfile)
         server = ThreadedServer(LightningService, port=int(self.args.port), authenticator=auth)
-        print('Starting it now.')
+        print('Server started and listening on {}:{}'.format(self.args.interface, self.args.port))
         server.start()
 
     @staticmethod
@@ -93,7 +92,7 @@ class App:
         parser = argparse.ArgumentParser(description='Setup a server to connect to remotly access your lightning node.')
         parser.add_argument('-i', '--interface', default='127.0.0.1',
                             help='The interface to run the server on. If set to 0.0.0.0, it will be remotely accessible',
-                            dest='host')
+                            dest='interface')
         parser.add_argument('-p', '--port', default='8002', help='Sets the port for the server to be starting on',
                             dest='port')
         parser.add_argument('-c', '--certdir', default='./certs', help='The directory to put the certificates in.',

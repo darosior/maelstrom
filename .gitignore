@@ -1,3 +1,5 @@
-venv* 
+serv_venv
+cli_venv 
 kivy 
 .idea
+./*/cert*/*
