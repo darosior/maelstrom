@@ -34,7 +34,7 @@ class App:
             cert_req = self.createCertRequest(self.pk, 'sha256', C='BI', ST='Bitcoin', L='Lightning',\
                                               O='C-lightning', OU='c-simple')
             self.cert_server = self.createCertificate(cert_req, (None, self.pk), 1000,
-                                                  (int(time.time()), int(time.time()) + 365 * 24 * 3600))
+                                                  (0, int(time.time()) + 365 * 24 * 3600))
             with open(os.path.join(self.args.certdir, 'node.crt'), 'w') as f:
                 f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_server).decode())
                 f.close()
@@ -53,7 +53,7 @@ class App:
             pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
             cert_req = self.createCertRequest(pk)
             self.cert_client = self.createCertificate(cert_req, (None, pk), 1000,
-                                                      (int(time.time()), int(time.time()) + 365 * 24 * 3600))
+                                                      (0, int(time.time()) + 365 * 24 * 3600))
             with open(os.path.join(self.args.certdir, 'client.crt'), 'w') as f:
                 f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, self.cert_client).decode())
                 f.close()
@@ -77,7 +77,7 @@ class App:
         :return:
         """
         print('\n\nSetting up the server ..\n')
-        auth = SSLAuthenticator(self.server_keyfile, self.server_certfile)
+        auth = SSLAuthenticator(self.server_keyfile, self.server_certfile, ca_certs=self.client_certfile)
         server = ThreadedServer(LightningService, port=int(self.args.port), authenticator=auth)
         print('Server started and listening on {}:{}'.format(self.args.interface, self.args.port))
         server.start()

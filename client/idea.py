@@ -16,11 +16,13 @@ def ssl_connect(host, port, server_cert, client_cert, client_key, family=socket.
     s = socket.socket(family, socktype, proto)
     s.settimeout(3)
     s.connect(sockaddr)
-    s2 = context.wrap_socket(s, server_side = False, server_hostname = None, do_handshake_on_connect = False)
+    s2 = ssl.wrap_socket(s, do_handshake_on_connect = False, server_side = False, ssl_version=ssl.PROTOCOL_TLSv1_2, certfile = client_cert, keyfile = client_key)
     #s2.connect((host, port))
-    s2.do_handshake()
+    try:
+        s2.do_handshake()
+    except ssl.SSLError as e:
+        print(e)
     print('\n\n\n', s2.getpeercert())
-    return factory.connect_stream(s2, service = FakeSlaveService)
 
 ssl_connect('127.0.0.1', 8002, os.path.abspath('../c-simple/certs/node.crt'),
             os.path.abspath('../c-simple/certs/client.crt'), os.path.abspath('../c-simple/certs/client.key'))

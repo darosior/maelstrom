@@ -76,13 +76,15 @@ class SSLAuthenticator(object):
         if self.ciphers is not None:
             kwargs["ciphers"] = self.ciphers
         try:
-            sock2 = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-            sock2.verify_mode = ssl.CERT_REQUIRED
-            sock2.load_cert_chain(certfile = self.certfile, keyfile = self.keyfile)
-            sock3 = sock2.wrap_socket(sock, server_side=True)
-        except Exception as e:
-            print(e)
-        return sock3, sock3.getpeername()
+            sock2 = ssl.wrap_socket(sock, server_side=True, certfile=self.certfile, keyfile=self.keyfile,
+                                    cert_reqs=ssl.CERT_REQUIRED, ssl_version=ssl.PROTOCOL_TLSv1_2, ca_certs=self.ca_certs)
+        except ssl.SSLError as e:
+            # To authorize self-signed certificate.
+            if '[SSL: TLSV1_ALERT_UNKNOWN_CA]' in str(e):
+                pass
+            else:
+                raise Exception(e)
+        return sock2, sock2.getpeername()
 
 
 
