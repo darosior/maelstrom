@@ -31,6 +31,7 @@ Will come when software will be usable.
 - [pyopenssl](https://pypi.org/project/pyOpenSSL/)
 - [argparse](https://pypi.org/project/argparse/)
 - [RPyC](https://rpyc.readthedocs.io/en/latest/index.html)
+- [pylightning](https://github.com/ElementsProject/lightning/tree/master/contrib/pylightning)
 
 ### Client
 
