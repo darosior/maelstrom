@@ -8,7 +8,7 @@ class LightningService(Service):
     We are intentionnally not exposing all the methods provided by LightningRpc since the wallet doesn't require them.
     This may change in the future if we want to provide a remote access.
     """
-    def __init__(self):
+    def on_connnect(self):
         self.l = LightningRpc('socketfile')
         
     def exposed_get_balance(self):
