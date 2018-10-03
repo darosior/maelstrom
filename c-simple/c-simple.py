@@ -78,7 +78,7 @@ class App:
         """
         print('\n\nSetting up the server ..\n')
         auth = SSLAuthenticator(self.server_keyfile, self.server_certfile, ca_certs=self.client_certfile)
-        server = ThreadedServer(LightningService, port=int(self.args.port), authenticator=auth, protocol_config = {"allow_public_attrs" : True})
+        server = ThreadedServer(LightningService, port=int(self.args.port), authenticator=auth, protocol_config={"allow_all_attrs": True})
         print('Server started and listening on {}:{}'.format(self.args.interface, self.args.port))
         server.start()
 

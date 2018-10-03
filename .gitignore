@@ -4,5 +4,5 @@ cli_venv
 kivy 
 .idea
 ./*/cert*/*
-venvserver
+venvserv
 venvclient

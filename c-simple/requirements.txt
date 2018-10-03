@@ -1,0 +1,10 @@
+asn1crypto==0.24.0
+cffi==1.11.5
+cryptography==2.3.1
+idna==2.7
+plumbum==1.6.7
+pycparser==2.19
+pylightning==0.0.4
+pyOpenSSL==18.0.0
+rpyc==4.0.2
+six==1.11.0
