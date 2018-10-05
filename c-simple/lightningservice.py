@@ -1,5 +1,6 @@
 from rpyc import MasterService, Service
 from lightning import LightningRpc
+import time
 
 class LightningService(Service):
     """
@@ -9,11 +10,50 @@ class LightningService(Service):
     This may change in the future if we want to provide a remote access.
     """
     def on_connect(self, conn):
-        self.l = LightningRpc('socketfile')
+        """
+        Executed by RPyC when a connection is set up.
+
+        :param conn: The connection. Kind of a socket
+        """
+        self.l = LightningRpc(self.get_lightning_daemon())
         
     def on_disconnect(self, conn):
-        print('\n\n AAAAAAA')
-    
+        """
+        Executed by RPyC when a connection is close.
+
+        :param conn: The connection. Kind of a socket.
+        """
+        pass
+
+    # Utility functions
+
+    def get_lightning_daemon(self):
+        """
+        Getting the daemon to instanciate LightningRpc.
+        cf https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning-pay
+
+        :return: The daemon's location.
+        """
+        home = os.getenv("HOME")
+        if home:
+            dir = os.path.join(home, ".lightning")
+        else:
+            dir = '.'
+        return os.path.join(dir, "lightning-rpc")
+
+    def check_payment_status(self, hash):
+        """
+        Checks the status of the payment using listpayments.
+
+        :return: The status of the payment ('pending', 'complete', 'failed'). None if not found.
+        """
+        for payment in self.l.listpayments():
+            if payment.get('payment_hash') == hash:
+                return payment.get('status')
+        return None
+
+    # Exposed functions
+
     def exposed_get_balance(self):
         """
         Calls listfunds and returns a dictionnary with two entries.
@@ -57,11 +97,10 @@ class LightningService(Service):
         payee = decoded_bolt['payee'] # Public key
         hash = decoded_bolt['payment_hash']
         route = self.l.getroute(payee, amount, 1)
-        payment_status = self.l.sendpay(route['route'], hash)['status']
+        self.l.sendpay(route['route'], hash)
+        payment_status = self.check_payment_status(hash)
         while payment_status == 'pending':
-            for p in self.l.listpayments():
-                if p['payment_hash'] == hash:
-                    payment_status = p['status']
+            time.sleep(1)
         return payment_status
 
     def exposed_get_fees(self, bolt11, amount=None):
