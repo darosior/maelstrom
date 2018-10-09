@@ -1,6 +1,7 @@
 from rpyc import MasterService, Service
 from lightning import LightningRpc
 import time
+import os
 
 class LightningService(Service):
     """
@@ -119,18 +120,20 @@ class LightningService(Service):
             raise Exception("You have to specify an amount")
         return self.l.getroute(payee, amount, 1)['route'][0]['msatoshi'] - amount
 
-	def exposed_gen_invoice(self, msatoshi, label, desc=None)
-		"""
-		Generates an invoice for being paid.
-		
-		More infos on https://github.com/ElementsProject/lightning/blob/master/doc/lightning-invoice.7.txt
-		and https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning/lightning.py#L149
-		
-		:param msatoshi: Payment value in mili satoshis.
-		:param label: Unique string or number (treated as a string : '01' != '1')
-		:param desc: A description for the payment.
-		"""
-		return self.l.invoice(msatoshi, label, desc)
+    def exposed_gen_invoice(self, msatoshi, label, desc=None):
+	    """
+	    Generates an invoice for being paid.
+	    
+	    More infos on https://github.com/ElementsProject/lightning/blob/master/doc/lightning-invoice.7.txt
+	    and https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning/lightning.py#L149
+	    
+	    :param msatoshi: Payment value in mili satoshis.
+	    :param label: Unique string or number (treated as a string : '01' != '1')
+	    :param desc: A description for the payment.
+	    
+	    :returns: The invoice
+	    """
+	    return self.l.invoice(msatoshi, label, desc)
 		
 		
         
