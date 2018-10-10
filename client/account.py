@@ -5,12 +5,13 @@ import rpyc
 import os
 import ssl, socket
 import time
+import hashlib
 
 class Account:
     """
     The class to manage the user account.
     
-    The methods to interact with the node will be placed here.
+    Contains methods to interact with the node, most of them are just wrappers of c-simple's.
     """
 
     def __init__(self):
@@ -43,12 +44,11 @@ class Account:
         except ssl.SSLError as e:
             raise Exception('Could not connect to host {}:{}, getting following ssl error :\n{}'.format(host, port, e))
     
-    def get_balance(network='all'):
+    def get_balance(self, network='all'):
         """
         Fetch the balance from the node.
         
         :param where: Which network's balance should be returned. Possible values : 'all', 'bitcoin', 'lightning'.
-        
         :return: Balance in satoshis if network == 'lightning' or network == 'bitcoin'. Else a dict with every balance.
         """
         balances = self.conn.root.get_balance()
@@ -59,3 +59,41 @@ class Account:
 	    else:
 	        return balances
 	
+	def pay(self, invoice, amount=None):
+	    """
+	    Pays the specified invoice.
+	    
+	    :param invoice: The invoice to pay.
+        :param amout: The amount to pay, needed if not included in the invoice.
+        :return: True if payment was completed, False otherwise. 
+	    """
+	    status = self.conn.root.pay(invoice, amount)
+	    if status == 'complete':
+	        return True
+	    else:
+	        return False
+	
+	def get_fees(self, invoice, amount=None):
+	    """
+	    Calculates fees needed to pay a specified invoice.
+	    
+	    :param invoice: The invoice to pay.
+        :param amout: The amount to pay, needed if not included in the invoice.
+        :return: The fees (in msatoshis)
+	    """
+	    return self.conn.route.get_fees(invoice, amount=None)
+	    
+	def gen_invoice(self, amount, label=None, desc=None):
+	    """
+	    Generates an invoice for being paid.
+	    
+	    :param msatoshi: Payment value in mili satoshis.
+	    :param label: Unique string or number (treated as a string : '01' != '1')
+	    :param desc: A description for the payment.
+	    
+	    :returns: The invoice
+	    """
+	    if not label:
+	        label = hashlib.sha256(str(time.time()).encode()).hexdigest()
+	    return self.conn.root.gen_invoice(amount, label, desc)
+	    	
