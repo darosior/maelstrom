@@ -97,3 +97,11 @@ class Account:
 	        label = hashlib.sha256(str(time.time()).encode()).hexdigest()
 	    return self.conn.root.gen_invoice(amount, label, desc)
 	    	
+    def decode_invoice(self, invoice):
+        """
+	    Decodes the specified invoice (as a BOLT11 str).
+	    
+	    :param invoice: The invoice to decode.
+	    :return: Decoded invoice, as a dict.
+	    """
+	    return self.conn.root.decode_invoice(invoice)
