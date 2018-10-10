@@ -135,5 +135,13 @@ class LightningService(Service):
 	    """
 	    return self.l.invoice(msatoshi, label, desc)
 		
+	def exposed_decode_invoice(self, invoice):
+	    """
+	    Decodes the specified invoice (as a BOLT11 str).
+	    
+	    :param invoice: The invoice to decode.
+	    :return: Decoded invoice, as a dict.
+	    """
+	    return self.l.decodepay(invoice)
 	
         
