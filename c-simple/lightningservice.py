@@ -81,7 +81,7 @@ class LightningService(Service):
         
     def exposed_pay(self, bolt11, amount=None):
         """
-        Call pay in order to pay an invoice.
+        Call pay in order to pay an invoice, waits while its state is 'pending'.
 
         This function is highly inspired of https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning-pay.
 
@@ -118,7 +118,7 @@ class LightningService(Service):
         amount = decoded_bolt.get('msatoshi', amount)
         if not amount:
             raise Exception("You have to specify an amount")
-        return self.l.getroute(payee, amount, 1)['route'][0]['msatoshi'] - amount
+        return int(self.l.getroute(payee, amount, 1)['route'][0]['msatoshi']) - int(amount)
 
     def exposed_gen_invoice(self, msatoshi, label, desc=None):
 	    """
@@ -135,5 +135,5 @@ class LightningService(Service):
 	    """
 	    return self.l.invoice(msatoshi, label, desc)
 		
-		
+	
         
