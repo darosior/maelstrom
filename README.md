@@ -35,7 +35,7 @@ Will come when software will be usable.
 
 ### Client
 
-- [Kivy](https://kivy.org/doc/stable/installation/installation-linux.html#installation-in-a-virtual-environment) -> ```pip install Cython==0.28.2 kivy```
+- [Kivy](https://kivy.org/doc/stable/installation/installation-linux.html#installation-in-a-virtual-environment) -> ```pip install Cython==0.28.2 kivy==1.10.1```
 - [RPyC](https://rpyc.readthedocs.io/en/latest/index.html)
 
 
