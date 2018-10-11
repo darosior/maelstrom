@@ -65,7 +65,7 @@ class LightningService(Service):
         funds = self.l.listfunds()
         onchain = {}
         onchannel = {}
-        for o in funds['output']:
+        for o in funds['outputs']:
             if o['address'] in onchain:
                 # To test !
                 onchain[o['address']] += int(o['value'])
@@ -77,7 +77,7 @@ class LightningService(Service):
                 onchannel[c['short_channel_id']] += int(c['channel_sat'])
             else:
                 onchannel[c['short_channel_id']] = int(c['channel_sat'])
-        return dict(onchain, onchannel)
+        return dict(onchain = onchain, onchannel = onchannel)
         
     def exposed_pay(self, bolt11, amount=None):
         """
@@ -89,6 +89,7 @@ class LightningService(Service):
         :param amount: An amount (in msatoshis) to pay, only needed if amount is not in bolt11.
         :return: The status of the payment. Whether 'pending', 'complete', 'failed' (or any lightning-cli error).
         """
+        print(bolt11)
         if bolt11[:2] != 'ln':
             raise Exception('Invoice is malformed')
         decoded_bolt = self.l.decodepay(bolt11)
@@ -115,33 +116,34 @@ class LightningService(Service):
         if bolt11[:2] != 'ln':
             raise Exception('Invoice is malformed')
         decoded_bolt = self.l.decodepay(bolt11)
+        payee = decoded_bolt['payee']
         amount = decoded_bolt.get('msatoshi', amount)
         if not amount:
             raise Exception("You have to specify an amount")
         return int(self.l.getroute(payee, amount, 1)['route'][0]['msatoshi']) - int(amount)
 
     def exposed_gen_invoice(self, msatoshi, label, desc=None):
-	    """
-	    Generates an invoice for being paid.
+        """
+        Generates an invoice for being paid.
 	    
-	    More infos on https://github.com/ElementsProject/lightning/blob/master/doc/lightning-invoice.7.txt
-	    and https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning/lightning.py#L149
-	    
-	    :param msatoshi: Payment value in mili satoshis.
-	    :param label: Unique string or number (treated as a string : '01' != '1')
-	    :param desc: A description for the payment.
-	    
-	    :returns: The invoice
-	    """
-	    return self.l.invoice(msatoshi, label, desc)
+	More infos on https://github.com/ElementsProject/lightning/blob/master/doc/lightning-invoice.7.txt
+	and https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning/lightning.py#L149
+	   
+	:param msatoshi: Payment value in mili satoshis.
+	:param label: Unique string or number (treated as a string : '01' != '1')
+	:param desc: A description for the payment.
+	
+	:returns: The invoice
+	"""
+        return self.l.invoice(msatoshi, label, desc)
 		
-	def exposed_decode_invoice(self, invoice):
-	    """
-	    Decodes the specified invoice (as a BOLT11 str).
-	    
-	    :param invoice: The invoice to decode.
-	    :return: Decoded invoice, as a dict.
-	    """
-	    return self.l.decodepay(invoice)
+    def exposed_decode_invoice(self, invoice):
+        """
+        Decodes the specified invoice (as a BOLT11 str).
+ 	    
+        :param invoice: The invoice to decode.
+        :return: Decoded invoice, as a dict.
+        """
+        return self.l.decodepay(invoice)
 	
         
