@@ -23,10 +23,13 @@ def ssl_connect(host, port, server_cert, client_cert, client_key, family=socket.
    #     print(e)
     return factory.connect_stream(SocketStream(s2), service = VoidService)
 
-c = ssl_connect('127.0.0.1', 8002, os.path.abspath('../c-simple/certs/node.crt'),
+c = ssl_connect('192.168.1.7', 8002, os.path.abspath('../c-simple/certs/node.crt'),
             os.path.abspath('../c-simple/certs/client.crt'), os.path.abspath('../c-simple/certs/client.key'))
 
-print(c.root)
-#c.root.get_balance()
-
+print(c.root.get_balance())
+i = c.root.gen_invoice(1000, 111111, "aa")['bolt11']
+print(i)
+print(c.root.decode_invoice(i))
+print(c.root.get_fees(i))
+print(c.root.pay(i))
 
