@@ -22,6 +22,7 @@
     Button:
     	text: "Load server cert"
     	size_hint: 6.5, 0.5
+    	on_press: root.show_fb()
     Label:
     	text: ""
 
@@ -30,6 +31,7 @@
     Button:
     	text: "Load client cert"
     	size_hint: 6.5, 0.5
+    	on_press: root.show_fb()
     Label:
     	text: ""
 
@@ -38,6 +40,7 @@
     Button:
     	text: "Load client key"
     	size_hint: 6.5, 0.5
+    	on_press: root.show_fb()
     Label:
     	text: ""
 
@@ -52,12 +55,10 @@
         	text: ""
         TextInput:
         	multiline: False
-    	    hint_text: "IP and port to connect to"
-    	    size_hint: 3.5, 0.5
+    	    hint_text: "IP"
         TextInput:
         	multiline: False
-    	    text: "8002"
-    	    size_hint: 3.5, 0.5
+    	    hint_text: "Port (default:8002)"
     Label:
     	text: ""
 
