@@ -6,8 +6,9 @@ Builder.load_file('ui/file_browser.kv')
 
 
 class FileBrowser(GridLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, manager, **kwargs):
         super(FileBrowser, self).__init__(**kwargs)
+        self.manager = manager
 
     def system_name(self):
         name = platform.system()
@@ -22,3 +23,7 @@ class FileBrowser(GridLayout):
             return '/storage/emulated/0'
         else:
             return str(Path.home())
+
+    def select(self, filename):
+        self.manager.load_cert(filename)
+        self.manager.show_login()
