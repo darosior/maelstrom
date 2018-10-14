@@ -5,56 +5,76 @@
 	Widget:
     Image:
     	source: "ui/img/logo.png"
-    	size_hint: 6.5, 0.5
-    Widget:
-
-    Widget:
-    Widget:
-    Widget:
-
-    Widget:
-    Button:
-        id: server_cert
-    	text: "Load server cert"
-    	size_hint: 6.5, 0.5
-    	on_press: root.show_fb("server cert")
-    Widget:
-
-    Widget:
-    Button:
-        id: client_cert
-    	text: "Load client cert"
-    	size_hint: 6.5, 0.5
-    	on_press: root.show_fb("client cert")
-    Widget:
-
-    Widget:
-    Button:
-        id: client_key
-    	text: "Load client key"
-    	size_hint: 6.5, 0.5
-    	on_press: root.show_fb("client key")
+    	size_hint: 6.5, 1.3
     Widget:
 
     Widget:
     GridLayout:
-        cols: 2
-        rows: 2
-        Label:
-        	text: ""
-        Label:
-        	text: ""
-        TextInput:
-            input_type: "number"
-        	multiline: False
-    	    hint_text: "IP"
-        TextInput:
-        	multiline: False
-    	    hint_text: "Port (default:8002)"
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        Button:
+            id: server_cert
+            text: "Load server cert"
+            on_press: root.show_fb("server cert")
     Widget:
 
     Widget:
+    GridLayout:
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        Button:
+            id: client_cert
+            text: "Load client cert"
+            on_press: root.show_fb("client cert")
     Widget:
+
+    Widget:
+    GridLayout:
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        Button:
+            id: client_key
+            text: "Load client key"
+            on_press: root.show_fb("client key")
+    Widget:
+
+    Widget:
+    GridLayout:
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        GridLayout:
+            cols: 2
+            rows: 1
+            padding: 5
+            TextInput:
+                id: ip
+                input_type: "number"
+                multiline: False
+                hint_text: "IP"
+            TextInput:
+                id: port
+                multiline: False
+                hint_text: "Port (default:8002)"
+    Widget:
+
+    Widget:
+    GridLayout:
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        Button:
+            id: connect
+            text: "Connect to c-simple server"
+            on_press: root.connect()
     Widget:
 
     Widget:

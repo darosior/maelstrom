@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from home import Home
 from login import Login
 from file_browser import FileBrowser
+import re
 
 
 class InterfaceManager(BoxLayout):
@@ -41,12 +42,18 @@ class InterfaceManager(BoxLayout):
         """
         if self.button_pressed == 'server cert':
             self.app.server_cert = filename
+            # If multiple selection
+            self.login.ids['server_cert'].text = re.sub(r'\([^)]*\)', '', self.login.ids['server_cert'].text)
             self.login.ids['server_cert'].text += ' ({})'.format(filename)
         elif self.button_pressed == 'client cert':
             self.app.client_cert = filename
+            # If multiple selection
+            self.login.ids['client_cert'].text = re.sub(r'\([^)]*\)', '', self.login.ids['client_cert'].text)
             self.login.ids['client_cert'].text += ' ({})'.format(filename)
         elif self.button_pressed == 'client key':
             self.app.client_key = filename
+            # If multiple selection
+            self.login.ids['client_key'].text = re.sub(r'\([^)]*\)', '', self.login.ids['client_key'].text)
             self.login.ids['client_key'].text += ' ({})'.format(filename)
         else:
             raise
