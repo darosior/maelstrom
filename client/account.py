@@ -1,13 +1,13 @@
-    from rpyc.utils import factory
-    from rpyc.core.service import VoidService, MasterService, FakeSlaveService
-    from rpyc.core.stream import SocketStream
-    import rpyc
-    import os
-    import ssl, socket
-    import time
-    import hashlib
+from rpyc.utils import factory
+from rpyc.core.service import VoidService, MasterService, FakeSlaveService
+from rpyc.core.stream import SocketStream
+import rpyc
+import os
+import ssl, socket
+import time
+import hashlib
 
-    class Account:
+class Account:
     """
     The class to manage the user account.
 

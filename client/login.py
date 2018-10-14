@@ -9,5 +9,14 @@ class Login(GridLayout):
         self.manager = manager
 
     def show_fb(self, button_pressed):
+        """
+        A call to the interface manager, to show the file browser
+        :param button_pressed: The button pressed to access the file browser
+        """
         self.manager.show_fb(button_pressed)
 
+    def connect(self):
+        """
+        A call to the interface manager, to setup connection to c-simple server
+        """
+        self.manager.connect()
