@@ -24,6 +24,6 @@ class FileBrowser(GridLayout):
         else:
             return str(Path.home())
 
-    def select(self, filename):
-        self.manager.load_cert(filename)
+    def select(self, file_list):
+        self.manager.load_cert(file_list[0])
         self.manager.show_login()

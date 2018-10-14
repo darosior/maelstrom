@@ -19,21 +19,35 @@ class InterfaceManager(BoxLayout):
         self.button_pressed = None
 
     def show_login(self):
+        """
+        Shows the login "page".
+        """
         self.clear_widgets()
         self.add_widget(self.login)
 
     def show_fb(self, button_pressed):
+        """
+        Shows the file browser
+        :param button_pressed: The button pressed to access the fb.
+        """
         self.clear_widgets()
         self.button_pressed = button_pressed
         self.add_widget(self.file_chooser)
 
     def load_cert(self, filename):
+        """
+        Save the cert pathname to the application. Changes button text to show the chosen filename.
+        :param filename: The path to the cert file.
+        """
         if self.button_pressed == 'server cert':
             self.app.server_cert = filename
+            self.login.ids['server_cert'].text += ' ({})'.format(filename)
         elif self.button_pressed == 'client cert':
             self.app.client_cert = filename
+            self.login.ids['client_cert'].text += ' ({})'.format(filename)
         elif self.button_pressed == 'client key':
             self.app.client_key = filename
+            self.login.ids['client_key'].text += ' ({})'.format(filename)
         else:
             raise
 

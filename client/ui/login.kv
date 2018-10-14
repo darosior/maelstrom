@@ -14,6 +14,7 @@
 
     Widget:
     Button:
+        id: server_cert
     	text: "Load server cert"
     	size_hint: 6.5, 0.5
     	on_press: root.show_fb("server cert")
@@ -21,6 +22,7 @@
 
     Widget:
     Button:
+        id: client_cert
     	text: "Load client cert"
     	size_hint: 6.5, 0.5
     	on_press: root.show_fb("client cert")
@@ -28,6 +30,7 @@
 
     Widget:
     Button:
+        id: client_key
     	text: "Load client key"
     	size_hint: 6.5, 0.5
     	on_press: root.show_fb("client key")
@@ -42,6 +45,7 @@
         Label:
         	text: ""
         TextInput:
+            input_type: "number"
         	multiline: False
     	    hint_text: "IP"
         TextInput:
