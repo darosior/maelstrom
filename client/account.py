@@ -38,7 +38,8 @@ class Account:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
             s.connect((host, port))
             # Wrapping it to then get the secure connnection
-            s2 = ssl.wrap_socket(s, do_handshake_on_connect = False, server_side = False, ssl_version=ssl.PROTOCOL_TLSv1_2, certfile = client_cert, keyfile = client_key)
+            s2 = ssl.wrap_socket(s, do_handshake_on_connect=False, server_side=False, ssl_version=ssl.PROTOCOL_TLSv1_2,
+                                 certfile=self.client_cert, keyfile=self.client_key)
             s2.do_handshake()
             self.conn = factory.connect_stream(SocketStream(s2), service = VoidService)
         except ssl.SSLError as e:

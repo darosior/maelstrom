@@ -36,6 +36,13 @@ class InterfaceManager(BoxLayout):
         self.button_pressed = button_pressed
         self.add_widget(self.file_chooser)
 
+    def show_home(self):
+        """
+        Shows the homepage
+        """
+        self.clear_widgets()
+        self.add_widget(self.home)
+
     def load_cert(self, filename):
         """
         Save the cert pathname to the application. Changes button text to show the chosen filename.
@@ -74,12 +81,14 @@ class InterfaceManager(BoxLayout):
         else:
             # Default port value is 8002
             port = self.login.ids['port'].text if self.login.ids['port'].text else '8002'
+            ip = self.login.ids['ip'].text.replace(' ', '')
             try:
-                self.app.account.connect(self.login.ids['ip'].text, int(port))
+                self.app.account.connect(ip, int(port))
+                self.show_home()
             except Exception as e:
                 if 'Connection refused' in str(e):
                     self.login.ids['error'].text = 'Connection refused at {}:{}.'.format(self.login.ids['ip'].text, port)
-                elif 'Invalid argument' in str(e):
+                elif 'Invalid argument' in str(e) or 'No route to host' in str(e):
                     self.login.ids['error'].text = 'Wrong values for ip and/or port.'
                 else:
                     self.login.ids['error'].text = str(e) # ^^
