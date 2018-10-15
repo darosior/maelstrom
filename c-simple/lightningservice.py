@@ -125,15 +125,15 @@ class LightningService(Service):
     def exposed_gen_invoice(self, msatoshi, label, desc=None):
         """
         Generates an invoice for being paid.
-	    
-	More infos on https://github.com/ElementsProject/lightning/blob/master/doc/lightning-invoice.7.txt
-	and https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning/lightning.py#L149
+	
+        More infos on https://github.com/ElementsProject/lightning/blob/master/doc/lightning-invoice.7.txt
+        and https://github.com/ElementsProject/lightning/blob/master/contrib/pylightning/lightning/lightning.py#L149
 	   
 	:param msatoshi: Payment value in mili satoshis.
 	:param label: Unique string or number (treated as a string : '01' != '1')
 	:param desc: A description for the payment.
 	
-	:returns: The invoice
+	:returns: The invoice (as a list)
 	"""
         return self.l.invoice(msatoshi, label, desc)
 		
