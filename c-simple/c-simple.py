@@ -32,7 +32,7 @@ class App:
         if not os.path.isfile(os.path.join(self.args.certdir, 'node.crt')) or self.args.newcerts:
             self.pk = self.createKeyPair(crypto.TYPE_RSA, 4096)
             cert_req = self.createCertRequest(self.pk, 'sha256', C='BI', ST='Bitcoin', L='Lightning',\
-                                              O='C-lightning', OU='c-simple', CN='te.st.st')
+                                              O='C-lightning', OU='c-simple', CN='a.poin.ted.cn')
             self.cert_server = self.createCertificate(cert_req, (None, self.pk), 1000,
                                                   (0, int(time.time()) + 365 * 24 * 3600))
             with open(os.path.join(self.args.certdir, 'node.crt'), 'w') as f:

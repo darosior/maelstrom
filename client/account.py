@@ -32,8 +32,6 @@ class Account:
         if not (self.server_cert and self.client_cert and self.client_key):
             raise
         try:
-            # Creating the SSL context
-            context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH, cafile=self.server_cert)
             # Connecting the socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
             s.connect((host, port))

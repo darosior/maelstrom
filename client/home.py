@@ -4,5 +4,15 @@ Builder.load_file('ui/home.kv')
 
 
 class Home(GridLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, manager, **kwargs):
+        self.manager = manager
         super(Home, self).__init__(**kwargs)
+
+    def update_balance_text(self):
+        """
+        Formats the balance text with values fetched from the node
+        """
+        balance_lightning = self.manager.app.account.get_balance('lightning')
+        balance_onchain = self.manager.app.account.get_balance('bitcoin')
+        self.ids.balance.text = 'Balance :\n {} satoshis on chain \n{} satoshis on the Lightning network'.format(
+            balance_onchain, balance_lightning)

@@ -7,8 +7,8 @@ Builder.load_file('ui/file_browser.kv')
 
 class FileBrowser(GridLayout):
     def __init__(self, manager, **kwargs):
-        super(FileBrowser, self).__init__(**kwargs)
         self.manager = manager
+        super(FileBrowser, self).__init__(**kwargs)
 
     def system_name(self):
         name = platform.system()

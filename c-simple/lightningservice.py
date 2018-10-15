@@ -67,7 +67,6 @@ class LightningService(Service):
         onchannel = {}
         for o in funds['outputs']:
             if o['address'] in onchain:
-                # To test !
                 onchain[o['address']] += int(o['value'])
             else:
                 onchain[o['address']] = int(o['value'])

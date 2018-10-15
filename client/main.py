@@ -12,13 +12,14 @@ import re
 
 class InterfaceManager(BoxLayout):
     def __init__(self, app, **kwargs):
-        super(InterfaceManager, self).__init__(**kwargs)
         self.app = app
+        print(self.app)
         self.file_chooser = FileBrowser(self)
         self.login = Login(self)
-        self.home = Home()
+        self.home = Home(self)
         # Used to determine which cert to store. Not very elegant but functional
         self.button_pressed = None
+        super(InterfaceManager, self).__init__(**kwargs)
 
     def show_login(self):
         """
@@ -84,6 +85,7 @@ class InterfaceManager(BoxLayout):
             ip = self.login.ids['ip'].text.replace(' ', '')
             try:
                 self.app.account.connect(ip, int(port))
+                self.home.update_balance_text()
                 self.show_home()
             except Exception as e:
                 if 'Connection refused' in str(e):
@@ -96,10 +98,10 @@ class InterfaceManager(BoxLayout):
 
 class Csimple(App):
     def __init__(self, **kwargs):
-        super(Csimple, self).__init__(**kwargs)
         self.interface_manager = InterfaceManager(self, orientation='vertical')
         self.interface_manager.show_login()
         self.account = Account()
+        super(Csimple, self).__init__(**kwargs)
 
     def build(self):
         return self.interface_manager

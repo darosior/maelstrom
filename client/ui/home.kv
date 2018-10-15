@@ -15,6 +15,7 @@
     Widget:
     Button:
     	text: "Pay"
+    	on_press: root.update_balance_text()
     	size_hint: 6.5, 0.5
     Widget:
 
@@ -34,7 +35,8 @@
 
     Widget:
     Label:
-    	text: "You have 1000 Satoshis"
+        id: balance
+    	text: ''
     	size_hint: 6.5, 0.5
     Widget:
 
