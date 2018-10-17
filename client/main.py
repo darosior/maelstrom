@@ -13,7 +13,6 @@ import re
 class InterfaceManager(BoxLayout):
     def __init__(self, app, **kwargs):
         self.app = app
-        print(self.app)
         self.file_chooser = FileBrowser(self)
         self.login = Login(self)
         self.home = Home(self)

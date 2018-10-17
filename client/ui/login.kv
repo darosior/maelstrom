@@ -4,7 +4,7 @@
 	padding: 10
 	Widget:
     Image:
-    	source: "ui/img/logo.png"
+    	source: 'ui/img/logo.png'
     	size_hint: 6.5, 1.3
     Widget:
 
@@ -16,8 +16,8 @@
         padding: 10
         Button:
             id: server_cert
-            text: "Load server cert"
-            on_press: root.show_fb("server cert")
+            text: 'Load server cert'
+            on_press: root.show_fb('server cert')
     Widget:
 
     Widget:
@@ -28,8 +28,8 @@
         padding: 10
         Button:
             id: client_cert
-            text: "Load client cert"
-            on_press: root.show_fb("client cert")
+            text: 'Load client cert'
+            on_press: root.show_fb('client cert')
     Widget:
 
     Widget:
@@ -40,8 +40,8 @@
         padding: 10
         Button:
             id: client_key
-            text: "Load client key"
-            on_press: root.show_fb("client key")
+            text: 'Load client key'
+            on_press: root.show_fb('client key')
     Widget:
 
     Widget:
@@ -56,14 +56,14 @@
             padding: 5
             TextInput:
                 id: ip
-                input_type: "number"
+                input_type: 'number'
                 multiline: False
-                hint_text: "IP"
-                text: ""
+                hint_text: 'IP'
+                text: #'192.168.1.7'
             TextInput:
                 id: port
                 multiline: False
-                hint_text: "Port (default:8002)"
+                hint_text: 'Port (default:8002)'
     Widget:
 
     Widget:
@@ -74,13 +74,13 @@
         padding: 10
         Button:
             id: connect
-            text: "Connect to c-simple server"
+            text: 'Connect to c-simple server'
             on_press: root.connect()
     Widget:
 
     Widget:
     Label:
         id: error
-        text: ""
+        text: ''
         color: (1, 0, 0, 1)
     Widget:
