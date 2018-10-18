@@ -63,8 +63,6 @@ class InterfaceManager(BoxLayout):
             # If multiple selection
             self.login.ids['client_key'].text = re.sub(r'\([^)]*\)', '', self.login.ids['client_key'].text)
             self.login.ids['client_key'].text += ' ({})'.format(filename)
-        else:
-            raise
 
     def connect(self):
         """
@@ -77,7 +75,7 @@ class InterfaceManager(BoxLayout):
         elif not self.app.account.client_cert or not '.crt' == self.app.account.client_cert[-4:]:
             self.login.ids['error'].text = 'Wrong file format for client certificate.'
         elif not self.app.account.client_key or not '.key' == self.app.account.client_key[-4:]:
-            self.login.ids['error'].text = 'Wrong file format for clien key.'
+            self.login.ids['error'].text = 'Wrong file format for client key.'
         else:
             # Default port value is 8002
             port = self.login.ids['port'].text if self.login.ids['port'].text else '8002'
@@ -86,6 +84,15 @@ class InterfaceManager(BoxLayout):
                 self.app.account.connect(ip, int(port))
                 self.home.update_balance_text()
                 self.show_home()
+                # If connection succeeded, we stock the config for next time
+                self.app.config.setall('connection', {
+                    'server_cert': self.app.account.server_cert,
+                    'client_cert': self.app.account.client_cert,
+                    'client_key': self.app.account.client_key,
+                    'ip': ip,
+                    'port': port,
+                })
+                self.app.config.write()
             except Exception as e:
                 if 'Connection refused' in str(e):
                     self.login.ids['error'].text = 'Connection refused at {}:{}.'.format(self.login.ids['ip'].text, port)
@@ -97,13 +104,40 @@ class InterfaceManager(BoxLayout):
 
 class Csimple(App):
     def __init__(self, **kwargs):
-        self.interface_manager = InterfaceManager(self, orientation='vertical')
-        self.interface_manager.show_login()
-        self.account = Account()
         super(Csimple, self).__init__(**kwargs)
+        self.config = self.load_config()
+        self.interface_manager = InterfaceManager(self, orientation='vertical')
+        # The interface to c-simple running on the node
+        self.account = Account()
+        # Loading the config..
+        self.account.server_cert = self.config.get('connection', 'server_cert')
+        self.account.client_cert = self.config.get('connection', 'client_cert')
+        self.account.client_key = self.config.get('connection', 'client_key')
+        # ..And trying to connect if nothing changed, so the user doesn't set the parameters again
+        try:
+            self.account.connect(self.config.get('connection', 'ip'), int(self.config.get('connection', 'port')))
+            self.interface_manager.home.update_balance_text()
+            self.interface_manager.show_home()
+        except:
+            self.interface_manager.show_login()
+
 
     def build(self):
         return self.interface_manager
+
+    def build_config(self, config):
+        if self.config.has_section('connection'):
+            self.config.read(self.get_application_config())
+        else:
+            self.config.add_section('connection')
+            self.config.setall('connection', {
+                'server_cert': '',
+                'client_cert': '',
+                'client_key': '',
+                'ip': '',
+                'port': '8002',
+            })
+            self.config.write()
 
 if __name__ == '__main__':
     Csimple().run()

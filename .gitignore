@@ -8,3 +8,5 @@ venvserv
 venvclient
 venv
 ./*/lib
+./client/csimple.ini
+csimple.ini
