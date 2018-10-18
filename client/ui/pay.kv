@@ -1,4 +1,4 @@
-<Home>:
+<Pay>:
 	cols: 3
 	rows: 8
 	padding: 10
@@ -14,8 +14,18 @@
         rows: 1
         padding: 10
         Button:
-        	text: 'Pay'
-        	on_press: root.manager.show_pay()
+        	text: 'Scan'
+        	on_press: root.manager.show_scan()
+    Widget:
+
+    Widget:
+    GridLayout:
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        TextInput:
+            hint_text: 'Paste invoice'
     Widget:
 
     Widget:
@@ -25,18 +35,8 @@
         rows: 1
         padding: 10
         Button:
-            text: 'Request Payment'
-    Widget:
-
-    Widget:
-    GridLayout:
-        size_hint: 6.5, 1.3
-        cols: 1
-        rows: 1
-        padding: 10
-        Button:
-            text: 'Configure'
-            on_press: root.manager.show_login()
+            text: 'Go back'
+            on_press: root.manager.show_home()
     Widget:
 
     Widget:
@@ -46,7 +46,7 @@
         rows: 1
         padding: 15
         Label:
-            id: balance
+            id: payment_details
             text: ''
             halign: 'left'
             valign: 'top'
@@ -55,5 +55,12 @@
     Widget:
 
     Widget:
-    Widget:
+    GridLayout:
+        size_hint: 6.5, 1.3
+        cols: 1
+        rows: 1
+        padding: 10
+        Button:
+            id: pay
+        	text: 'Pay'
     Widget:

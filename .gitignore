@@ -1,6 +1,6 @@
 __pycache__
 serv_venv
-cli_venv 
+./*/venv 
 kivy 
 .idea
 ./*/cert*/*

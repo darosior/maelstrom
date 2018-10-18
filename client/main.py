@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from home import Home
 from login import Login
 from file_browser import FileBrowser
+from pay import Pay
 from account import Account
 import re
 
@@ -16,6 +17,7 @@ class InterfaceManager(BoxLayout):
         self.file_chooser = FileBrowser(self)
         self.login = Login(self)
         self.home = Home(self)
+        self.pay_widget = Pay(self)
         # Used to determine which cert to store. Not very elegant but functional
         self.button_pressed = None
         super(InterfaceManager, self).__init__(**kwargs)
@@ -42,6 +44,23 @@ class InterfaceManager(BoxLayout):
         """
         self.clear_widgets()
         self.add_widget(self.home)
+
+    def show_pay(self):
+        """
+        Shows the payment page.
+        """
+        self.clear_widgets()
+        self.add_widget(self.pay_widget)
+
+    def show_scan(self):
+        """
+        Shows the scan page
+        """
+        # To avoid the start of the camera at the application launch
+        #self.scan_widget = Scan(self)
+        self.clear_widgets()
+        self.add_widget(self.scan_widget)
+        #self.scan_widget.ids.zbarcam.play()
 
     def load_cert(self, filename):
         """
