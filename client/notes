@@ -1,0 +1,1 @@
+Change index in kivy/uix/camera.py to -1 to have it work on Linux

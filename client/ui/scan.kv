@@ -1,0 +1,27 @@
+<Scan>:
+    orientation: 'vertical'
+
+    GridLayout:
+        cols: 3
+        rows: 1
+        size_hint: 1.0, 0.2
+        Widget:
+        Image:
+    	    source: 'ui/img/logo.png'
+        Widget:
+
+    ZBarCam:
+        id: zbarcam
+        # optional, by default checks all types
+        code_types: 'qrcode'
+
+    GridLayout:
+        cols: 3
+        rows: 1
+        size_hint: 1.0, 0.2
+        padding: 5
+        Widget:
+        Button:
+            text: 'Go back'
+            on_press: root.manager.show_pay()
+        Widget:

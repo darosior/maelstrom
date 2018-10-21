@@ -7,6 +7,7 @@ from home import Home
 from login import Login
 from file_browser import FileBrowser
 from pay import Pay
+from scan import Scan
 from account import Account
 import re
 
@@ -18,6 +19,7 @@ class InterfaceManager(BoxLayout):
         self.login = Login(self)
         self.home = Home(self)
         self.pay_widget = Pay(self)
+        self.scan_widget = None
         # Used to determine which cert to store. Not very elegant but functional
         self.button_pressed = None
         super(InterfaceManager, self).__init__(**kwargs)
@@ -49,6 +51,11 @@ class InterfaceManager(BoxLayout):
         """
         Shows the payment page.
         """
+        # The only way to stop the camera and retrieve it later without throwing an error
+        # see https://github.com/kivy/kivy/issues/3569
+        if self.scan_widget:
+            self.scan_widget.ids.zbarcam.ids.xcamera._camera = None
+            self.scan_widget = None
         self.clear_widgets()
         self.add_widget(self.pay_widget)
 
@@ -56,11 +63,11 @@ class InterfaceManager(BoxLayout):
         """
         Shows the scan page
         """
-        # To avoid the start of the camera at the application launch
-        #self.scan_widget = Scan(self)
+        # To retrieve the camera, see show_pay()
+        self.scan_widget = Scan(self)
+        self.scan_widget.ids.zbarcam.ids.xcamera._camera.start()
         self.clear_widgets()
         self.add_widget(self.scan_widget)
-        #self.scan_widget.ids.zbarcam.play()
 
     def load_cert(self, filename):
         """
