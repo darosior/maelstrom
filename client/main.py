@@ -10,6 +10,7 @@ from pay import Pay
 from scan import Scan
 from account import Account
 import re
+import requests
 
 
 class InterfaceManager(BoxLayout):
@@ -145,6 +146,7 @@ class Csimple(App):
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
         except:
+            raise
             self.interface_manager.show_login()
 
 
@@ -164,6 +166,22 @@ class Csimple(App):
                 'port': '8002',
             })
             self.config.write()
+
+    def btc_usd(self):
+        """
+        Fetch the bitcoin price in USD from blockchain.info
+        :return: (int) the price in USD
+        """
+        price = requests.get('https://blockchain.info/ticker').json()['USD']['last']
+        return int(price)
+
+    def to_usd(self, satoshis):
+        """
+        Converts a given value in satoshis to usd
+        :param satoshis: (int) The number of satoshis
+        :return: (int) The price in USD
+        """
+        return satoshis*self.btc_usd()/100000000
 
 if __name__ == '__main__':
     Csimple().run()

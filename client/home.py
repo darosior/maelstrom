@@ -14,5 +14,6 @@ class Home(GridLayout):
         """
         balance_lightning = self.manager.app.account.get_balance('lightning')
         balance_onchain = self.manager.app.account.get_balance('bitcoin')
-        self.ids.balance.text = '[b]On chain        : {} satoshis\nOn Lightning : {} satoshis[b]'.format(
-            balance_onchain, balance_lightning)
+        self.ids.balance.text = '[b]On chain        : {} sat ({}$)\nOn Lightning : {} sat ({}$)[b]'.format(
+            balance_onchain, self.manager.app.to_usd(balance_onchain), balance_lightning,
+            self.manager.app.to_usd(balance_lightning))
