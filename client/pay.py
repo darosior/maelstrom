@@ -46,6 +46,6 @@ class Pay(GridLayout):
                 # For debugging
                 self.payment_details.text = str(e)
         else:
-            self.payment_details.text = 'You did not specified any invoice'
+            self.payment_details.text = 'You did not specify any invoice'
                     
                     
