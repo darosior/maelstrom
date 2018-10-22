@@ -15,6 +15,7 @@
         padding: 10
         Button:
         	text: 'Pay'
+        	text_size: self.size
         	on_press: root.manager.show_pay()
     Widget:
 
@@ -36,6 +37,7 @@
         padding: 10
         Button:
             text: 'Configure'
+            text_size: self.size
             on_press: root.manager.show_login()
     Widget:
 
@@ -48,6 +50,7 @@
         Label:
             id: balance
             text: ''
+            text_size: self.size
             halign: 'left'
             valign: 'top'
             markup: True

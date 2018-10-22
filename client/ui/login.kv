@@ -17,6 +17,7 @@
         Button:
             id: server_cert
             text: 'Load server cert'
+            text_size: self.size
             on_press: root.show_fb('server cert')
     Widget:
 
@@ -29,6 +30,7 @@
         Button:
             id: client_cert
             text: 'Load client cert'
+            text_size: self.size
             on_press: root.show_fb('client cert')
     Widget:
 
@@ -41,6 +43,7 @@
         Button:
             id: client_key
             text: 'Load client key'
+            text_size: self.size
             on_press: root.show_fb('client key')
     Widget:
 
@@ -75,6 +78,7 @@
         Button:
             id: connect
             text: 'Connect to c-simple server'
+            text_size: self.size
             on_press: root.connect()
     Widget:
 
@@ -82,5 +86,6 @@
     Label:
         id: error
         text: ''
+        text_size: self.size
         color: (1, 0, 0, 1)
     Widget:

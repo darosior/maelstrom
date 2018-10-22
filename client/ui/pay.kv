@@ -15,6 +15,7 @@
         padding: 10
         Button:
         	text: 'Scan'
+        	text_size: self.size
         	on_press: root.manager.show_scan()
     Widget:
 
@@ -26,7 +27,7 @@
         padding: 10
         TextInput:
             hint_text: 'Paste invoice'
-            on_text: root.check_invoice(self.text)
+            on_text: root.show_payment_details(self.text)
     Widget:
 
     Widget:
@@ -37,6 +38,7 @@
         padding: 10
         Button:
             text: 'Go back'
+            text_size: self.size
             on_press: root.manager.show_home()
     Widget:
 
@@ -48,6 +50,7 @@
         padding: 15
         Label:
             id: payment_details
+            text_size: self.size
             text: ''
             halign: 'left'
             valign: 'top'
@@ -63,6 +66,7 @@
         padding: 10
         Button:
             id: pay
+            text_size: self.size
         	text: 'Pay'
         	on_press: root.pay()
     Widget:

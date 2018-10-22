@@ -22,7 +22,7 @@ class Pay(GridLayout):
             decoded['expiry'] = int(decoded['expiry'])/60
             sat = int(decoded['msatoshi'])/1000
             usd = self.manager.app.to_usd(sat)
-            self.ids.payment_details.text = f"Pay {sat} satoshis ({usd}$) to {decoded['payee']} ?\nDescription : {decoded['description']}\nThis invoice expires in {decoded['expiry']}."
+            self.ids.payment_details.text = f"Pay {sat} satoshis ({usd}$) to {decoded['payee']} ?\nDescription : {decoded['description']}\nThis invoice expires in {decoded['expiry']} min."
             # We keep the valid invoice and activate the confirmation button
             self.bolt11 = bolt11
             self.ids.pay.opacity = 1.0

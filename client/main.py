@@ -59,6 +59,7 @@ class InterfaceManager(BoxLayout):
             self.scan_widget = None
         self.clear_widgets()
         self.add_widget(self.pay_widget)
+        self.pay_widget.ids.payment_details.text = ''
 
     def show_scan(self):
         """
