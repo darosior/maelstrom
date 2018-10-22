@@ -28,3 +28,24 @@ class Pay(GridLayout):
             self.ids.pay.opacity = 1.0
         except:
             self.ids.payment_details.text = 'Could not decode invoice. Maybe you should try again.'
+            
+    def pay(self):
+        """
+        Confirms the payment of the invoice.
+        """
+        # TODO : clean the UI animations for wait, confirm, error
+        self.ids.payment_details.text = 'Sending the payment, waiting for confirmation..'
+        if self.bolt11:
+            try:
+                confirmed = self.manager.app.account.pay(self.bolt11)
+                if confirmed:
+                    self.payment_details.text = 'Success !'
+                else:
+                    self.payment_details.text = 'Something went wrong, maybe you should try again'
+            except Exception as e:
+                # For debugging
+                self.payment_details.text = str(e)
+        else:
+            self.payment_details.text = 'You did not specified any invoice'
+                    
+                    
