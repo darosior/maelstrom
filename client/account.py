@@ -58,15 +58,16 @@ class Account:
         else:
             return balances
 
-    def pay(self, invoice, amount=None):
+    def pay(self, bolt11, description='', amount=None):
         """
         Pays the specified invoice.
 
-        :param invoice: The invoice to pay.
-        :param amout: The amount to pay, needed if not included in the invoice.
+        :param bolt11: The invoice to pay.
+        :param amount: The amount to pay, needed if not included in the invoice.
+        :param description: The paymeny description.
         :return: True if payment was completed, False otherwise.
         """
-        status = self.conn.root.pay(invoice, amount)
+        status = self.conn.root.pay(bolt11, description, amount)
         if status == 'complete':
             return True
         else:
