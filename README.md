@@ -24,7 +24,7 @@ Will come when software will be usable.
 
 Will come when software will be usable.
 
-## Dependencies
+## :syringe: Dependencies
 
 ### Server
 
