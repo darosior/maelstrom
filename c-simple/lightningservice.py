@@ -78,7 +78,7 @@ class LightningService(Service):
                 onchannel[c['short_channel_id']] = int(c['channel_sat'])
         return dict(onchain = onchain, onchannel = onchannel)
         
-    def exposed_pay(self, bolt11, amount=None):
+    def exposed_pay(self, bolt11, description='', amount=None):
         """
         Call pay in order to pay an invoice, waits while its state is 'pending'.
 
@@ -98,7 +98,7 @@ class LightningService(Service):
         payee = decoded_bolt['payee'] # Public key
         hash = decoded_bolt['payment_hash']
         route = self.l.getroute(payee, amount, 1)
-        self.l.sendpay(route['route'], hash)
+        self.l.sendpay(route['route'], hash, description)
         payment_status = self.check_payment_status(hash)
         while payment_status == 'pending':
             time.sleep(1)
