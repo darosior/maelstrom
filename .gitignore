@@ -1,12 +1,10 @@
 __pycache__
 serv_venv
 ./*/venv 
+*venv*
 kivy 
 .idea
 ./*/cert*/*
-venvserv
-venvclient
-venv
 ./*/lib
 ./client/csimple.ini
 csimple.ini
