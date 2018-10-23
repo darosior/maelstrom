@@ -48,7 +48,7 @@ class LightningService(Service):
 
         :return: The status of the payment ('pending', 'complete', 'failed'). None if not found.
         """
-        for payment in self.l.listpayments():
+        for payment in self.l.listpayments()["payments"]:
             if payment.get('payment_hash') == hash:
                 return payment.get('status')
         return None
@@ -88,7 +88,6 @@ class LightningService(Service):
         :param amount: An amount (in msatoshis) to pay, only needed if amount is not in bolt11.
         :return: The status of the payment. Whether 'pending', 'complete', 'failed' (or any lightning-cli error).
         """
-        print(bolt11)
         if bolt11[:2] != 'ln':
             raise Exception('Invoice is malformed')
         decoded_bolt = self.l.decodepay(bolt11)
@@ -98,7 +97,7 @@ class LightningService(Service):
         payee = decoded_bolt['payee'] # Public key
         hash = decoded_bolt['payment_hash']
         route = self.l.getroute(payee, amount, 1)
-        self.l.sendpay(route['route'], hash, description)
+        self.l.sendpay(route['route'], hash)#, description)
         payment_status = self.check_payment_status(hash)
         while payment_status == 'pending':
             time.sleep(1)
