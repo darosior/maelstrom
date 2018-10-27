@@ -16,6 +16,8 @@
         Button:
         	text: 'Pay'
         	text_size: self.size
+            halign: 'center'
+            valign: 'middle'
         	on_press: root.manager.show_pay()
     Widget:
 
@@ -27,6 +29,9 @@
         padding: 10
         Button:
             text: 'Request Payment'
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
     Widget:
 
     Widget:
@@ -38,6 +43,8 @@
         Button:
             text: 'Configure'
             text_size: self.size
+            halign: 'center'
+            valign: 'middle'
             on_press: root.manager.show_login()
     Widget:
 
@@ -52,7 +59,7 @@
             text: ''
             text_size: self.size
             halign: 'left'
-            valign: 'top'
+            valign: 'middle'
             markup: True
             font_size: '20sp'
     Widget:

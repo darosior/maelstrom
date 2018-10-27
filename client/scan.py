@@ -8,3 +8,10 @@ class Scan(BoxLayout):
     def __init__(self, manager, **kwargs):
         self.manager = manager
         super(Scan, self).__init__(**kwargs)
+
+    def scanned(self):
+        """
+        A fonction executed when a qrcode is detected.
+        """
+        self.manager.pay_widget.show_payment_details(str(self.ids.zbarcam.symbols()[0].data))
+        self.manager.show_pay()

@@ -16,6 +16,8 @@
         Button:
         	text: 'Scan'
         	text_size: self.size
+            halign: 'center'
+            valign: 'middle'
         	on_press: root.manager.show_scan()
     Widget:
 
@@ -27,6 +29,9 @@
         padding: 10
         TextInput:
             hint_text: 'Paste invoice'
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
             on_text: root.show_payment_details(self.text)
     Widget:
 
@@ -39,6 +44,8 @@
         Button:
             text: 'Go back'
             text_size: self.size
+            halign: 'center'
+            valign: 'middle'
             on_press: root.manager.show_home()
     Widget:
 
@@ -66,7 +73,9 @@
         padding: 10
         Button:
             id: pay
-            text_size: self.size
         	text: 'Pay'
+        	text_size: self.size
+            halign: 'center'
+            valign: 'middle'
         	on_press: root.pay()
     Widget:

@@ -64,7 +64,7 @@ class Account:
 
         :param bolt11: The invoice to pay.
         :param amount: The amount to pay, needed if not included in the invoice.
-        :param description: The paymeny description.
+        :param description: The payment description.
         :return: True if payment was completed, False otherwise.
         """
         status = self.conn.root.pay(bolt11, description, amount)
