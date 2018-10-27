@@ -66,10 +66,11 @@ class LightningService(Service):
         onchain = {}
         onchannel = {}
         for o in funds['outputs']:
-            if o['address'] in onchain:
-                onchain[o['address']] += int(o['value'])
-            else:
-                onchain[o['address']] = int(o['value'])
+            if o['output'] > 0:
+                if o['address'] in onchain:
+                    onchain[o['address']] += int(o['value'])
+                else:
+                    onchain[o['address']] = int(o['value'])
         for c in funds['channels']:
             # Unlikely
             if c['short_channel_id'] in onchannel:
@@ -100,6 +101,7 @@ class LightningService(Service):
         self.l.sendpay(route['route'], hash)#, description)
         payment_status = self.check_payment_status(hash)
         while payment_status == 'pending':
+            payment_status = self.check_payment_status(hash)
             time.sleep(1)
         return payment_status
 
