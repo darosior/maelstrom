@@ -25,6 +25,7 @@ class Pay(GridLayout):
             self.ids.payment_details.text = f"Pay {sat} satoshis ({usd}$) to {decoded['payee']} ?\nDescription : {decoded['description']}\nThis invoice expires in {decoded['expiry']} min."
             # We keep the valid invoice and activate the confirmation button
             self.bolt11 = bolt11
+            self.invoice_desc = decoded['description']
             self.ids.pay.opacity = 1.0
         except:
             self.ids.payment_details.text = 'Could not decode invoice. Maybe you should try again.'
@@ -37,15 +38,16 @@ class Pay(GridLayout):
         self.ids.payment_details.text = 'Sending the payment, waiting for confirmation..'
         if self.bolt11:
             try:
-                confirmed = self.manager.app.account.pay(self.bolt11)
+                confirmed = self.manager.app.account.pay(self.bolt11, self.invoice_desc)
                 if confirmed:
-                    self.payment_details.text = 'Success !'
+                    self.ids.payment_details.text = 'Success !'
                 else:
-                    self.payment_details.text = 'Something went wrong, maybe you should try again'
+                    self.ids.payment_details.text = 'Something went wrong, maybe you should try again'
             except Exception as e:
                 # For debugging
-                self.payment_details.text = str(e)
+                self.ids.payment_details.text = str(e)
+                print(str(e))
         else:
-            self.payment_details.text = 'You did not specify any invoice'
+            self.ids.payment_details.text = 'You did not specify any invoice'
                     
                     
