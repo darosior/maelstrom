@@ -72,11 +72,13 @@ class LightningService(Service):
                 else:
                     onchain[o['address']] = int(o['value'])
         for c in funds['channels']:
-            # Unlikely
-            if c['short_channel_id'] in onchannel:
-                onchannel[c['short_channel_id']] += int(c['channel_sat'])
-            else:
-                onchannel[c['short_channel_id']] = int(c['channel_sat'])
+            # It mays be no short id (i.e if funding tx isn't confirmed yet)
+            if 'short_channel_id' in c.keys():
+                # Unlikely
+                if c['short_channel_id'] in onchannel:
+                    onchannel[c['short_channel_id']] += int(c['channel_sat'])
+                else:
+                    onchannel[c['short_channel_id']] = int(c['channel_sat'])
         return dict(onchain = onchain, onchannel = onchannel)
         
     def exposed_pay(self, bolt11, description='', amount=None):
