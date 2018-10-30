@@ -147,7 +147,6 @@ class Csimple(App):
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
         except:
-            raise
             self.interface_manager.show_login()
 
 
