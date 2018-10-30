@@ -10,7 +10,7 @@ class Pay(GridLayout):
         # We hide the confirmation buttons for now
         self.ids.pay.opacity = 0.0
         self.bolt11 = ''
-        
+
     def show_payment_details(self, bolt11):
         """
         Shows the payment details for validation.
