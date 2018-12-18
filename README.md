@@ -41,7 +41,7 @@ python3 main.py
 
 ### Client
 
-- [Kivy](https://kivy.org/doc/stable/installation/installation-linux.html#installation-in-a-virtual-environment) -> ```pip install Cython==0.28.2 kivy==1.10.1```
+- [Kivy](https://kivy.org/doc/stable/installation/installation-linux.html#installation-in-a-virtual-environment)
 - [RPyC](https://rpyc.readthedocs.io/en/latest/index.html)
 
 ## 📃 Licence
