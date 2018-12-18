@@ -27,6 +27,7 @@ On Debian stretch :
 git clone https://github.com/darosior/c-simple && cd c-simple/client
 python3 -m venv venv && source venv/bin/activate # Not necessary, done in the script
 ./install.sh
+python3 main.py
 ```
 
 ## :syringe: Dependencies
