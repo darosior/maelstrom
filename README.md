@@ -21,8 +21,13 @@ C-simple is an easy-to-use and secure mobile interface to C-lightning. It provid
 Will come when software will be usable.
 
 ## :hammer: Mobile client installation
-
-Will come when software will be usable.
+  
+On Debian stretch :
+```
+git clone https://github.com/darosior/c-simple && cd c-simple/client
+python3 -m venv venv && source venv/bin/activate # Not necessary, done in the script
+./install.sh
+```
 
 ## :syringe: Dependencies
 
