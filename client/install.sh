@@ -1,17 +1,16 @@
 #!/bin/bash
 
 [[ "$VIRTUAL_ENV" == "" ]]; INVENV=$?
-VENVDIR="./venv/"
+VENVDIR="./venv"
 
 printf "\033[0;34m- Checking virtual environment.. (\"./venv\")\033[0m\n"
-if [ ! $INVENV ];then
+if [ $INVENV -eq 0 ];then
     if [ ! -d $VENVDIR ];then
-	printf "\033[0;34m- 	Creating virtual environment.. (\"./venv\")\033[0m\n"
+	    printf "\033[0;34m- 	Creating virtual environment.. (\"./venv\")\033[0m\n"
         python3 -m venv venv
-    else
-	printf "\033[0;34m- 	Activating virtual environment.. (\"./venv\")\033[0m\n"
-	source $VENVDIR
     fi
+    printf "\033[0;34m- 	Activating virtual environment.. (\"./venv\")\033[0m\n"
+	source "$VENVDIR/bin/activate"
 fi
 
 printf "\033[0;34m- Installing Cython (v0.28.2)\033[0m\n"
