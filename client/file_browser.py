@@ -1,5 +1,6 @@
 import platform
 from pathlib import Path
+from kivy.utils import platform
 from kivy.uix.gridlayout import GridLayout
 from kivy.lang import Builder
 Builder.load_file('ui/file_browser.kv')
@@ -18,11 +19,13 @@ class FileBrowser(GridLayout):
         return name
 
     def get_path(self):
-        system = self.system_name().lower()
-        if system == 'android':
-            return '/storage/emulated/0'
-        else:
+        if platform in ['linux', 'macosx', 'windows']:
             return str(Path.home())
+        else:
+            from android.permissions import request_permission, Permission
+            request_permission(Permission.READ_EXTERNAL_STORAGE)
+            request_permission(Permission.WRITE_EXTERNAL_STORAGE)
+            return '/storage/emulated/0/Download'
 
     def select(self, file_list):
         if file_list:
