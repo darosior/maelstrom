@@ -20,30 +20,54 @@ class UnixDomainSocketRpc(object):
         self.executor = executor
         self.logger = logger
 
+        # Do we require the compatibility mode?
+        self._compat = True
+
     @staticmethod
     def _writeobj(sock, obj):
         s = json.dumps(obj)
         sock.sendall(bytearray(s, 'UTF-8'))
 
-    def _readobj(self, sock):
-        buff = b''
+    def _readobj_compat(self, sock, buff=b''):
+        if not self._compat:
+            return self._readobj(sock, buff)
         while True:
             try:
-                b = sock.recv(1024)
+                b = sock.recv(max(1024, len(buff)))
                 buff += b
+
+                if b'\n\n' in buff:
+                    # The next read will use the non-compatible read instead
+                    self._compat = False
+
                 if len(b) == 0:
                     return {'error': 'Connection to RPC server lost.'}
-
-                if buff[-3:] != b' }\n':
+                if b' }\n' not in buff:
                     continue
-
                 # Convert late to UTF-8 so glyphs split across recvs do not
                 # impact us
-                objs, _ = self.decoder.raw_decode(buff.decode("UTF-8"))
-                return objs
+                buff = buff.decode("UTF-8")
+                objs, len_used = self.decoder.raw_decode(buff)
+                buff = buff[len_used:].lstrip().encode("UTF-8")
+                return objs, buff
             except ValueError:
                 # Probably didn't read enough
                 pass
+
+    def _readobj(self, sock, buff=b''):
+        """Read a JSON object, starting with buff; returns object and any buffer left over"""
+        while True:
+            parts = buff.split(b'\n\n', 1)
+            if len(parts) == 1:
+                # Didn't read enough.
+                b = sock.recv(max(1024, len(buff)))
+                buff += b
+                if len(b) == 0:
+                    return {'error': 'Connection to RPC server lost.'}, buff
+            else:
+                buff = parts[1]
+                obj, _ = self.decoder.raw_decode(parts[0].decode("UTF-8"))
+                return obj, buff
 
     def __getattr__(self, name):
         """Intercept any call that is not explicitly defined and call @call
@@ -53,8 +77,13 @@ class UnixDomainSocketRpc(object):
         """
         name = name.replace('_', '-')
 
-        def wrapper(**kwargs):
-            return self.call(name, payload=kwargs)
+        def wrapper(*args, **kwargs):
+            if len(args) != 0 and len(kwargs) != 0:
+                raise RpcError("Cannot mix positional and non-positional arguments")
+            elif len(args) != 0:
+                return self.call(name, payload=args)
+            else:
+                return self.call(name, payload=kwargs)
         return wrapper
 
     def call(self, method, payload=None):
@@ -63,8 +92,10 @@ class UnixDomainSocketRpc(object):
         if payload is None:
             payload = {}
         # Filter out arguments that are None
-        payload = {k: v for k, v in payload.items() if v is not None}
+        if isinstance(payload, dict):
+            payload = {k: v for k, v in payload.items() if v is not None}
 
+        # FIXME: we open a new socket for every readobj call...
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.connect(self.socket_path)
         self._writeobj(sock, {
@@ -72,7 +103,7 @@ class UnixDomainSocketRpc(object):
             "params": payload,
             "id": 0
         })
-        resp = self._readobj(sock)
+        resp, _ = self._readobj_compat(sock)
         sock.close()
 
         self.logger.debug("Received response for %s call: %r", method, resp)
@@ -118,13 +149,13 @@ class LightningRpc(UnixDomainSocketRpc):
         }
         return self.call("listnodes", payload)
 
-    def getroute(self, peer_id, msatoshi, riskfactor, cltv=9, fromid=None, fuzzpercent=None, seed=None):
+    def getroute(self, peer_id, msatoshi, riskfactor, cltv=9, fromid=None, fuzzpercent=None, seed=None, exclude=[]):
         """
         Show route to {id} for {msatoshi}, using {riskfactor} and optional
         {cltv} (default 9). If specified search from {fromid} otherwise use
         this node as source. Randomize the route with up to {fuzzpercent}
         (0.0 -> 100.0, default 5.0) using {seed} as an arbitrary-size string
-        seed.
+        seed. {exclude} is an optional array of scid/direction to exclude.
         """
         payload = {
             "id": peer_id,
@@ -133,20 +164,22 @@ class LightningRpc(UnixDomainSocketRpc):
             "cltv": cltv,
             "fromid": fromid,
             "fuzzpercent": fuzzpercent,
-            "seed": seed
+            "seed": seed,
+            "exclude": exclude
         }
         return self.call("getroute", payload)
 
-    def listchannels(self, short_channel_id=None):
+    def listchannels(self, short_channel_id=None, source=None):
         """
-        Show all known channels, accept optional {short_channel_id}
+        Show all known channels, accept optional {short_channel_id} or {source}
         """
         payload = {
-            "short_channel_id": short_channel_id
+            "short_channel_id": short_channel_id,
+            "source": source
         }
         return self.call("listchannels", payload)
 
-    def invoice(self, msatoshi, label, description, expiry=None, fallbacks=None, preimage=None):
+    def invoice(self, msatoshi, label, description, expiry=None, fallbacks=None, preimage=None, exposeprivatechannels=None):
         """
         Create an invoice for {msatoshi} with {label} and {description} with
         optional {expiry} seconds (default 1 hour)
@@ -157,7 +190,8 @@ class LightningRpc(UnixDomainSocketRpc):
             "description": description,
             "expiry": expiry,
             "fallbacks": fallbacks,
-            "preimage": preimage
+            "preimage": preimage,
+            "exposeprivatechannels": exposeprivatechannels
         }
         return self.call("invoice", payload)
 
@@ -209,11 +243,14 @@ class LightningRpc(UnixDomainSocketRpc):
         }
         return self.call("decodepay", payload)
 
-    def help(self):
+    def help(self, command=None):
         """
-        Show available commands
+        Show available commands, or just {command} if supplied.
         """
-        return self.call("help")
+        payload = {
+            "command": command,
+        }
+        return self.call("help", payload)
 
     def stop(self):
         """
@@ -285,8 +322,8 @@ class LightningRpc(UnixDomainSocketRpc):
 
     def pay(self, bolt11, msatoshi=None, description=None, riskfactor=None):
         """
-        Send payment specified by {bolt11} with optional {msatoshi}
-        (if and only if {bolt11} does not have amount),
+        Send payment specified by {bolt11} with {msatoshi}
+        (ignored if {bolt11} has an amount),
 
         {description} (required if {bolt11} uses description hash)
         and {riskfactor} (default 1.0)
@@ -332,14 +369,17 @@ class LightningRpc(UnixDomainSocketRpc):
         }
         return self.call("listpeers", payload)
 
-    def fundchannel(self, node_id, satoshi, feerate=None):
+    def fundchannel(self, node_id, satoshi, feerate=None, announce=True):
         """
-        Fund channel with {id} using {satoshi} satoshis"
+        Fund channel with {id} using {satoshi} satoshis
+        with feerate of {feerate} (uses default feerate if unset).
+        If {announce} is False, don't send channel announcements.
         """
         payload = {
             "id": node_id,
             "satoshi": satoshi,
-            "feerate": feerate
+            "feerate": feerate,
+            "announce": announce
         }
         return self.call("fundchannel", payload)
 
@@ -448,12 +488,13 @@ class LightningRpc(UnixDomainSocketRpc):
             payload={"id": peerid, "force": force}
         )
 
-    def disconnect(self, peer_id):
+    def disconnect(self, peer_id, force=False):
         """
-        Disconnect from peer with {peer_id}
+        Disconnect from peer with {peer_id}, optional {force} even if has active channel
         """
         payload = {
             "id": peer_id,
+            "force": force,
         }
         return self.call("disconnect", payload)
 
