@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = c-simple
+title = Csimple
 
 # (str) Package name
-package.name = c-simple
+package.name = csimple
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
@@ -13,10 +13,10 @@ package.domain = org.test
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = 
+source.include_exts = py,png,jpg,kv,atlas
 
 # (list) List of inclusions using pattern matching
-source.include_patterns = ui/*, ui/img/*.png
+#source.include_patterns = assets/*,images/*.png
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -36,22 +36,22 @@ version = 0.0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3crystax,kivy,cython,rpyc,zbarlight,Pillow,numpy,qrcode
+requirements = python3,kivy
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (list) Garden requirements
-garden_requirements = xcamera,zbarcam,qrcode
+#garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = ./ui/img/logo.png
+#presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-icon.filename = ./ui/img/logo.png
+#icon.filename = %(source.dir)s/data/icon.png
 
-# (str) Supported orientation (one of landscape, portrait or all)
+# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
 
 # (list) List of service to declare
@@ -68,7 +68,7 @@ orientation = portrait
 osx.python_version = 3
 
 # Kivy version to use
-osx.kivy_version = 1.10.1
+osx.kivy_version = 1.9.1
 
 #
 # Android specific
@@ -85,25 +85,28 @@ fullscreen = 0
 #android.presplash_color = #FFFFFF
 
 # (list) Permissions
-android.permissions = INTERNET,CHANGE_WIFI_MULTICAST_STATE,ACCESS_NETWORK_STATE,ACCESS_WIFI_STATE
+#android.permissions = INTERNET
 
-# (int) Android API to use
-#android.api = 19
+# (int) Target Android API, should be as high as possible.
+#android.api = 27
 
-# (int) Minimum API required
-#android.minapi = 9
+# (int) Minimum API your APK will support.
+#android.minapi = 21
 
 # (int) Android SDK version to use
 #android.sdk = 20
 
 # (str) Android NDK version to use
-#android.ndk = 9c
+#android.ndk = 17c
+
+# (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
+#android.ndk_api = 21
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-android.ndk_path = 
+#android.ndk_path =
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
 #android.sdk_path =
@@ -115,6 +118,12 @@ android.ndk_path =
 # This can be useful to avoid excess Internet downloads or save time
 # when an update is due and you just want to test/build your package
 # android.skip_update = False
+
+# (bool) If True, then automatically accept SDK license
+# agreements. This is intended for automation only. If set to False,
+# the default, you will be shown the license when first running
+# buildozer.
+# android.accept_sdk_license = False
 
 # (str) Android entry point, default is ok for Kivy-based app
 #android.entrypoint = org.renpy.android.PythonActivity
@@ -149,8 +158,8 @@ android.ndk_path =
 # (list) Java classes to add as activities to the manifest.
 #android.add_activites = com.example.ExampleActivity
 
-# (str) python-for-android branch to use, defaults to stable
-#p4a.branch = stable
+# (str) python-for-android branch to use, defaults to master
+#p4a.branch = master
 
 # (str) OUYA Console category. Should be one of GAME or APP
 # If you leave this blank, OUYA support will not be enabled
@@ -217,6 +226,16 @@ android.arch = armeabi-v7a
 
 # (str) Path to a custom kivy-ios folder
 #ios.kivy_ios_dir = ../kivy-ios
+# Alternately, specify the URL and branch of a git checkout:
+ios.kivy_ios_url = https://github.com/kivy/kivy-ios
+ios.kivy_ios_branch = master
+
+# Another platform dependency: ios-deploy
+# Uncomment to use a custom checkout
+#ios.ios_deploy_dir = ../ios_deploy
+# Or specify URL and branch
+ios.ios_deploy_url = https://github.com/phonegap/ios-deploy
+ios.ios_deploy_branch = 1.7.0
 
 # (str) Name of the certificate to use for signing the debug version
 # Get a list of available identities: buildozer ios list_identities
@@ -229,7 +248,7 @@ android.arch = armeabi-v7a
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 1
+log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
 warn_on_root = 1
