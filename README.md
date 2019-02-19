@@ -1,4 +1,4 @@
-# c-simple
+# C-simple
 
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![MIT license](https://img.shields.io/github/license/darosior/c-simple.svg)](https://github.com/darosior/c-simple/blob/master/LICENSE)
@@ -18,7 +18,7 @@ C-simple is an easy-to-use and secure mobile interface to C-lightning. It provid
 
 ## :wrench: Server configuration
 
-Will come when software will be usable.
+TODO
 
 ## :hammer: Mobile client installation
   
@@ -26,8 +26,16 @@ On Debian stretch :
 ```
 git clone https://github.com/darosior/c-simple && cd c-simple/client
 python3 -m venv venv && source venv/bin/activate # Not necessary, done in the script
-./install.sh
+. install.sh
+```
+Will install C-simple, you will be able to launch it with :
+```
 python3 main.py
+```
+To build the apk, just run :
+```
+pip install buildozer
+buildozer android debug [deploy] [run]
 ```
 
 ## :syringe: Dependencies
