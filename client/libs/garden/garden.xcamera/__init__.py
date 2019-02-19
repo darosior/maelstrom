@@ -42,7 +42,7 @@ kv = """
 
 <XCamera>:
     # \ue800 corresponds to the camera icon in the font
-    icon: u"[font=data/xcamera/icons.ttf]\ue800[/font]"
+    icon: u"\ue800"
     icon_color: (0.13, 0.58, 0.95, 0.8)
     icon_size: dp(70)
 
