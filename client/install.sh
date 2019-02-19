@@ -33,3 +33,6 @@ fi
 printf "\033[0;34mInstalling opencv-python\033[0m\n"
 pip install -U opencv-python
 
+printf "\033[0;34mCleaning the openCV build directory to erase Python2 code\033[0m\n"
+cd libs/garden/garden.zbarcam/opencv-2.4.13.6 && ls |grep -v build | xargs rm -rf && cd ../../../../
+
