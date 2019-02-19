@@ -1,6 +1,6 @@
-Cython==0.26.1
-kivy
-rpyc
+kivy==1.10.1
+rpyc==4.0.2
 zbarlight==1.2
 Pillow==4.3.0
-numpy==1.13.3
+qrcode==6.0
+numpy==1.16.1

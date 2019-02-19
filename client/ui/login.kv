@@ -16,7 +16,7 @@
         padding: 10
         Button:
             id: server_cert
-            text: 'Load server cert'
+            text: 'Load server cert '+root.manager.app.config.get('connection', 'server_cert')
             text_size: self.size
             halign: 'center'
             valign: 'middle'
@@ -31,7 +31,7 @@
         padding: 10
         Button:
             id: client_cert
-            text: 'Load client cert'
+            text: 'Load client cert '+root.manager.app.config.get('connection', 'client_cert')
             text_size: self.size
             halign: 'center'
             valign: 'middle'
@@ -46,7 +46,7 @@
         padding: 10
         Button:
             id: client_key
-            text: 'Load client key'
+            text: 'Load client key '+root.manager.app.config.get('connection', 'client_key')
             text_size: self.size
             halign: 'center'
             valign: 'middle'
@@ -68,11 +68,12 @@
                 input_type: 'number'
                 multiline: False
                 hint_text: 'IP'
-                text: ''
+                text: root.manager.app.config.get('connection', 'ip')
             TextInput:
                 id: port
                 multiline: False
                 hint_text: 'Port (default:8002)'
+                text: root.manager.app.config.get('connection', 'port')
     Widget:
 
     Widget:

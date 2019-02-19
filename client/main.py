@@ -8,6 +8,7 @@ from login import Login
 from file_browser import FileBrowser
 from pay import Pay
 from scan import Scan
+from request_payment import RequestPayment
 from account import Account
 import re
 import requests
@@ -21,6 +22,7 @@ class InterfaceManager(BoxLayout):
         self.home = Home(self)
         self.pay_widget = Pay(self)
         self.scan_widget = None
+        self.request_payment = RequestPayment(self)
         # Used to determine which cert to store. Not very elegant but functional
         self.button_pressed = None
         super(InterfaceManager, self).__init__(**kwargs)
@@ -70,6 +72,13 @@ class InterfaceManager(BoxLayout):
         self.scan_widget.ids.zbarcam.ids.xcamera._camera.start()
         self.clear_widgets()
         self.add_widget(self.scan_widget)
+
+    def show_request_payment(self):
+        """
+        Shows the request payment page
+        """
+        self.clear_widgets()
+        self.add_widget(self.request_payment)
 
     def load_cert(self, filename):
         """
@@ -147,7 +156,6 @@ class Csimple(App):
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
         except:
-            raise
             self.interface_manager.show_login()
 
 

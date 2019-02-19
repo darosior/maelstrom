@@ -68,6 +68,7 @@ class Account:
         :return: True if payment was completed, False otherwise.
         """
         status = self.conn.root.pay(bolt11, description, amount)
+        print(status)
         if status == 'complete':
             return True
         else:
@@ -87,7 +88,7 @@ class Account:
         """
         Generates an invoice for being paid.
 
-        :param msatoshi: Payment value in mili satoshis.
+        :param amount: Payment value in mili satoshis.
         :param label: Unique string or number (treated as a string : '01' != '1')
         :param desc: A description for the payment.
 
@@ -95,6 +96,8 @@ class Account:
         """
         if not label:
             label = hashlib.sha256(str(time.time()).encode()).hexdigest()
+        if not desc:
+            desc = str(time.time())
         return self.conn.root.gen_invoice(amount, label, desc)
 
     def decode_invoice(self, invoice):
