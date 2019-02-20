@@ -3,6 +3,7 @@ kivy.require('1.10.1')
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.base import EventLoop
 from home import Home
 from login import Login
 from file_browser import FileBrowser
@@ -152,12 +153,12 @@ class Csimple(App):
         self.account.client_key = self.config.get('connection', 'client_key')
         # ..And trying to connect if nothing changed, so the user doesn't set the parameters again
         try:
+            EventLoop.window.bind(on_keyboard=self.key_input)
             self.account.connect(self.config.get('connection', 'ip'), int(self.config.get('connection', 'port')))
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
         except:
             self.interface_manager.show_login()
-
 
     def build(self):
         return self.interface_manager
@@ -175,6 +176,20 @@ class Csimple(App):
                 'port': '8002',
             })
             self.config.write()
+
+    def key_input(self, window, key, scancode, codepoint, modifier):
+        """
+        Overrides the back button (escape on desktop) default behaviour
+        """
+        if key == 27:
+            # If already on the home screen, we close the app
+            if hasattr(self.interface_manager.children[0], 'name'):
+                if self.interface_manager.children[0].name == 'home':
+                    self.stop()
+            # Otherwise we show the home screen (since it is the parent screen of every screens)
+            self.interface_manager.show_home()
+            return True # Stop propagation
+        return False
 
     def btc_usd(self):
         """
