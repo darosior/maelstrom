@@ -37,6 +37,11 @@ To build the apk, just run :
 pip install buildozer
 buildozer android debug [deploy] [run]
 ```
+If an error is raised about the android sdk/ndk not being found :
+```
+export ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk # Or the appropriate path
+export ANDROIDNDK=$HOME/.buildozer/android/platform/android-ndk-r17c # Or the appropriate path 
+```
 
 ## :syringe: Dependencies
 
