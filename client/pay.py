@@ -30,7 +30,7 @@ class Pay(GridLayout):
             self.ids.pay.opacity = 1.0
         except:
             self.ids.payment_details.text = 'Could not decode invoice. Maybe you should try again.'
-            
+
     def pay(self):
         """
         Confirms the payment of the invoice.

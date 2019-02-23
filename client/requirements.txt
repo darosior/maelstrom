@@ -1,4 +1,5 @@
-kivy==1.10.1
+# Kivy with opencv4 support
+https://github.com/kivy/kivy/archive/5fc538588092133f1a63edd6b0d79f00d3c86db4.zip
 rpyc==4.0.2
 zbarlight==1.2
 Pillow==4.3.0

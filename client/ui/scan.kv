@@ -14,6 +14,7 @@
         id: zbarcam
         # optional, by default checks all types
         code_types: 'qrcode',
+        on_symbols: root.scanned()
 
     GridLayout:
         cols: 3
@@ -28,9 +29,3 @@
             valign: 'middle'
             on_press: root.manager.show_pay()
         Widget:
-
-    Label:
-        size_hint: None, None
-        size: 0, 0
-        text: ', '.join([str(symbol.data) for symbol in zbarcam.symbols])
-        on_text: root.scanned()
