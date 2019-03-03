@@ -1,7 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import platform
 from kivy.lang import Builder
-from kivy.garden.zbarcam import ZBarCam
+from kivy.garden.zbarcam import zbarcam
 Builder.load_file('ui/scan.kv')
 
 
