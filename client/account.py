@@ -1,11 +1,17 @@
 from rpyc.utils import factory
 from rpyc.core.service import VoidService, MasterService, FakeSlaveService
 from rpyc.core.stream import SocketStream
-import rpyc
-import os
-import ssl, socket
-import time
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+import datetime
 import hashlib
+import os
+import socket
+import ssl
+import time
+import rpyc
 
 class Account:
     """
@@ -14,12 +20,39 @@ class Account:
     Contains methods to interact with the node, most of them are just wrappers of c-simple's.
     """
 
-    def __init__(self):
+    def __init__(self, node_cert=None, client_cert=None, client_key=None):
         self.balance = 0 # The balance is in Satoshis
-        self.server_cert = None
-        self.client_cert = None
-        self.client_key = None
+        self.node_cert = node_cert
+        self.client_cert = client_cert
+        self.client_key = client_key
+        if not (os.path.isfile(self.client_key) and os.path.isfile(self.client_cert)):
+            self.gen_certificate(key_length=4096)
         self.conn = None
+
+    def gen_certificate(self, key_length=4096):
+        """
+        Generates the client certificate
+        """
+        key = rsa.generate_private_key(public_exponent=65537, key_size=key_length, backend=default_backend())
+        with open(self.client_key, 'wb') as f:
+            f.write(key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption()))
+
+        subject = issuer = x509.Name([])
+        cert = x509.CertificateBuilder().subject_name(
+                subject
+            ).issuer_name(
+                issuer
+            ).public_key(
+                key.public_key()
+            ).serial_number(
+                x509.random_serial_number()
+            ).not_valid_before(
+                datetime.datetime.utcnow()
+            ).not_valid_after(
+                datetime.datetime.utcnow() + datetime.timedelta(days=365)
+            ).sign(key, hashes.SHA256(), default_backend())
+        with open(self.client_cert, 'wb') as f:
+            f.write(cert.public_bytes(serialization.Encoding.PEM))
 
     def connect(self, host, port=8002):
         """
@@ -29,18 +62,27 @@ class Account:
         :param port: the port behind which c-simple server runs, default is 8002.
         """
         # To avoid trying to connect without anything set up.
-        if not (self.server_cert and self.client_cert and self.client_key):
-            raise
+        if not (os.path.isfile(self.client_cert) and os.path.isfile(self.client_key)):
+            self.gen_certificate(key_length=4096)
+        if not os.path.isfile(self.node_cert):
+            raise Exception('Server certificate is missing. Cannot initiate the connection')
         try:
             # Connecting the socket
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.setblocking(1)
             s.connect((host, port))
-            # Wrapping it to then get the secure connnection
-            s2 = ssl.wrap_socket(s, do_handshake_on_connect=False, server_side=False, ssl_version=ssl.PROTOCOL_TLSv1_2,
-                                 certfile=self.client_cert, keyfile=self.client_key)
-            s2.do_handshake()
-            self.conn = factory.connect_stream(SocketStream(s2), service = VoidService)
+
+            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+            context.verify_mode = ssl.CERT_REQUIRED
+            context.load_verify_locations(self.node_cert)
+            context.load_cert_chain(self.client_cert, self.client_key)
+
+            secure_sock = context.wrap_socket(s, server_side=False, server_hostname=host)
+            self.conn = factory.connect_stream(SocketStream(secure_sock), service=VoidService)
+
         except ssl.SSLError as e:
+            print('a')
+            print(e)
             raise Exception('Could not connect to host {}:{}, getting following ssl error :\n{}'.format(host, port, e))
 
     def get_balance(self, network='all'):

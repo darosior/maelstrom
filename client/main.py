@@ -1,9 +1,10 @@
+# Kivy imports
 import kivy
 kivy.require('1.10.1')
-
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.base import EventLoop
+# Kivi screens imports
 from home import Home
 from login import Login
 from file_browser import FileBrowser
@@ -11,6 +12,8 @@ from pay import Pay
 from scan import Scan
 from request_payment import RequestPayment
 from account import Account
+# Other dependencies
+import os
 import re
 import requests
 
@@ -102,36 +105,27 @@ class InterfaceManager(BoxLayout):
         Checks the certfiles extensions and then calls the connect method from the "Account" class, which speaks to
         c-simple.
         """
-        if not self.app.account.server_cert or not '.crt' == self.app.account.server_cert[-4:]:
-            self.login.ids['error'].text = 'Wrong file format for server certificate.'
-        elif not self.app.account.client_cert or not '.crt' == self.app.account.client_cert[-4:]:
-            self.login.ids['error'].text = 'Wrong file format for client certificate.'
-        elif not self.app.account.client_key or not '.key' == self.app.account.client_key[-4:]:
-            self.login.ids['error'].text = 'Wrong file format for client key.'
-        else:
-            # Default port value is 8002
-            port = self.login.ids['port'].text if self.login.ids['port'].text else '8002'
-            ip = self.login.ids['ip'].text.replace(' ', '')
-            try:
-                self.app.account.connect(ip, int(port))
-                self.home.update_balance_text()
-                self.show_home()
-                # If connection succeeded, we stock the config for next time
-                self.app.config.setall('connection', {
-                    'server_cert': self.app.account.server_cert,
-                    'client_cert': self.app.account.client_cert,
-                    'client_key': self.app.account.client_key,
-                    'ip': ip,
-                    'port': port,
-                })
-                self.app.config.write()
-            except Exception as e:
-                if 'Connection refused' in str(e):
-                    self.login.ids['error'].text = 'Connection refused at {}:{}.'.format(self.login.ids['ip'].text, port)
-                elif 'Invalid argument' in str(e) or 'No route to host' in str(e):
-                    self.login.ids['error'].text = 'Wrong values for ip and/or port.'
-                else:
-                    self.login.ids['error'].text = str(e) # ^^
+        # Default port value is 8002
+        port = self.login.ids['port'].text if self.login.ids['port'].text else '8002'
+        ip = self.login.ids['ip'].text.replace(' ', '')
+        try:
+            self.app.account.connect(ip, int(port))
+            self.home.update_balance_text()
+            self.show_home()
+            # If connection succeeded, we stock the config for next time
+            self.app.config.setall('connection', {
+                'cert_dir': self.cert_dir,
+                'ip': ip,
+                'port': port,
+            })
+            self.app.config.write()
+        except Exception as e:
+            if 'Connection refused' in str(e):
+                self.login.ids['error'].text = 'Connection refused at {}:{}.'.format(self.login.ids['ip'].text, port)
+            elif 'Invalid argument' in str(e) or 'No route to host' in str(e):
+                self.login.ids['error'].text = 'Wrong values for ip and/or port.'
+            else:
+                self.login.ids['error'].text = str(e) # ^^
 
 
 class Csimple(App):
@@ -139,12 +133,18 @@ class Csimple(App):
         super(Csimple, self).__init__(**kwargs)
         self.config = self.load_config()
         self.interface_manager = InterfaceManager(self, orientation='vertical')
+        # The certificates stuff
+        if os.path.isdir(self.config.get('connection', 'cert_dir')):
+            self.cert_dir = self.config.get('connection', 'cert_dir')
+        else:
+            self.cert_dir = os.path.join(os.path.dirname(__file__), 'certs')
+        if not os.path.isdir(self.cert_dir):
+            os.makedirs(self.cert_dir)
+        self.client_cert = os.path.join(self.cert_dir, 'client.pem')
+        self.client_key = os.path.join(self.cert_dir, 'client.key')
+        self.node_cert = os.path.join(self.cert_dir, 'node.pem')
         # The interface to c-simple running on the node
-        self.account = Account()
-        # Loading the config..
-        self.account.server_cert = self.config.get('connection', 'server_cert')
-        self.account.client_cert = self.config.get('connection', 'client_cert')
-        self.account.client_key = self.config.get('connection', 'client_key')
+        self.account = Account(self.node_cert, self.client_cert, self.client_key)
         # ..And trying to connect if nothing changed, so the user doesn't set the parameters again
         try:
             EventLoop.window.bind(on_keyboard=self.key_input)
@@ -163,9 +163,7 @@ class Csimple(App):
         else:
             self.config.add_section('connection')
             self.config.setall('connection', {
-                'server_cert': '',
-                'client_cert': '',
-                'client_key': '',
+                'cert_dir': '',
                 'ip': '',
                 'port': '8002',
             })
