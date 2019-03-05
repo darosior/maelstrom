@@ -57,8 +57,8 @@ class SSLAuthenticator(object):
     service parameters.
     """
 
-    def __init__(self, keyfile, certfile, ca_certs = None, cert_reqs = None,
-            ssl_version = ssl.PROTOCOL_TLS, ciphers = None):
+    def __init__(self, keyfile, certfile, ca_certs = None, cert_reqs = ssl.CERT_REQUIRED,
+            ssl_version = ssl.PROTOCOL_TLSv1_2, ciphers = None):
         self.keyfile = str(keyfile)
         self.certfile = str(certfile)
         self.ca_certs = str(ca_certs) if ca_certs else None
@@ -77,13 +77,16 @@ class SSLAuthenticator(object):
             kwargs["ciphers"] = self.ciphers
         try:
             sock2 = ssl.wrap_socket(sock, server_side=True, certfile=self.certfile, keyfile=self.keyfile,
-                                    cert_reqs=ssl.CERT_REQUIRED, ssl_version=ssl.PROTOCOL_TLSv1_2, ca_certs=self.ca_certs)
+                                    cert_reqs=self.cert_reqs, ssl_version=self.ssl_version, ca_certs=self.ca_certs)
         except ssl.SSLError as e:
+            """
             # To authorize self-signed certificate.
             if '[SSL: TLSV1_ALERT_UNKNOWN_CA]' in str(e):
                 pass
             else:
                 raise Exception(e)
+            """
+            print(e)
         return sock2, sock2.getpeername()
 
 
