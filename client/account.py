@@ -81,8 +81,6 @@ class Account:
             self.conn = factory.connect_stream(SocketStream(secure_sock), service=VoidService)
 
         except ssl.SSLError as e:
-            print('a')
-            print(e)
             raise Exception('Could not connect to host {}:{}, getting following ssl error :\n{}'.format(host, port, e))
 
     def get_balance(self, network='all'):

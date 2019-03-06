@@ -4,7 +4,7 @@ kivy.require('1.10.1')
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.base import EventLoop
-# Kivi screens imports
+# UI screens imports
 from home import Home
 from login import Login
 from file_browser import FileBrowser
@@ -37,6 +37,8 @@ class InterfaceManager(BoxLayout):
         Shows the login "page".
         """
         self.clear_widgets()
+        cert_id = self.app.send_cert()
+        self.login.ids.client_cert.text = 'Enter the following number on the node : ' + cert_id
         self.add_widget(self.login)
 
     def show_fb(self, button_pressed):
@@ -112,7 +114,7 @@ class InterfaceManager(BoxLayout):
             self.app.account.connect(ip, int(port))
             self.home.update_balance_text()
             self.show_home()
-            # If connection succeeded, we stock the config for next time
+            # If connection succeeded, we store the config for next time
             self.app.config.setall('connection', {
                 'cert_dir': self.cert_dir,
                 'ip': ip,
@@ -182,6 +184,30 @@ class Csimple(App):
             self.interface_manager.show_home()
             return True # Stop propagation
         return False
+
+    def send_cert(self):
+        """
+        Sends the certificate to pixeldrain in order to make the handshake
+        :return: The id of the certificate on pixeldrain.
+        """
+        with open(self.client_cert, 'rb') as f:
+            file_content = f.read()
+        r = requests.post('https://pixeldrain.com/api/upload', files={'file':file_content}).json()
+        print(r)
+        if r.get('success'):
+            return r.get('id')
+        raise Exception('Could not upload the certificate to pixeldrain')
+
+    def receive_cert(self, id):
+        """
+        Receive a cert from pixeldrain.
+        :param id: The id of the certificate on pixeldrain.
+        :return: The data of the certificate (the file content).
+        """
+        r = requests.get('https://pixeldrain.com/api/file/'+str(id))
+        if r.status_code == 200:
+            return r.content #bytes
+        raise Exception('Could not receive the file with id '+str(id)+' from pixeldrain')
 
     def btc_usd(self):
         """

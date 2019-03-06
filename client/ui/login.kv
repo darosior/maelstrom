@@ -9,18 +9,7 @@
     Widget:
 
     Widget:
-    GridLayout:
-        size_hint: 6.5, 1.3
-        cols: 1
-        rows: 1
-        padding: 10
-        Button:
-            id: server_cert
-            text: 'Load server cert '+root.manager.app.config.get('connection', 'server_cert')
-            text_size: self.size
-            halign: 'center'
-            valign: 'middle'
-            on_press: root.show_fb('server cert')
+    Widget:
     Widget:
 
     Widget:
@@ -29,13 +18,12 @@
         cols: 1
         rows: 1
         padding: 10
-        Button:
+        Label:
             id: client_cert
-            text: 'Load client cert '+root.manager.app.config.get('connection', 'client_cert')
+            text: 'Enter the following characters on the node : '
             text_size: self.size
             halign: 'center'
             valign: 'middle'
-            on_press: root.show_fb('client cert')
     Widget:
 
     Widget:
@@ -44,13 +32,12 @@
         cols: 1
         rows: 1
         padding: 10
-        Button:
-            id: client_key
-            text: 'Load client key '+root.manager.app.config.get('connection', 'client_key')
+        TextInput:
+            id: node_cert
+            hint_text: 'Enter the characters output by the node'
             text_size: self.size
             halign: 'center'
             valign: 'middle'
-            on_press: root.show_fb('client key')
     Widget:
 
     Widget:

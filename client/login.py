@@ -19,4 +19,12 @@ class Login(GridLayout):
         """
         A call to the interface manager, to setup connection to c-simple server
         """
-        self.manager.connect()
+        try:
+            node_cert = self.manager.app.receive_cert(self.ids.node_cert.text)
+            with open(self.manager.app.node_cert, 'wb') as f:
+                f.write(node_cert)
+            self.manager.connect()
+        except Exception as e:
+            print(str(e))
+            # TODO : display an error message here
+            pass
