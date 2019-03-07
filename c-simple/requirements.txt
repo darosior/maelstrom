@@ -5,6 +5,7 @@ idna==2.7
 plumbum==1.6.7
 pycparser==2.19
 pylightning==0.0.4
-pyOpenSSL==18.0.0
+cryptography==2.6.1
 rpyc==4.0.2
 six==1.11.0
+requests==2.21.0

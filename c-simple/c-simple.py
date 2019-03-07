@@ -1,8 +1,9 @@
-import sys
-import os
-import time
 import argparse
 import datetime
+import os
+import requests
+import sys
+import time
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -35,8 +36,13 @@ class App:
         print('Checking client certificate.. ', end='')
         self.client_cert = os.path.join(self.args.certdir, 'client.pem')
         if not os.path.isfile(self.client_cert):
-            print('Client certificate is not present in the certificates directory. Please provide it *somehow*.')
-            exit(1)
+            nodecert_id = self.send_cert()
+            print('Client certificate is not present in the certificates directory. Handshake has to be done between this node and your phone, please launch the app and enter the following characters in the appropriate field : ' + str(nodecert_id))
+            print('Enter the characters displayed on the phone : ', end='')
+            clientcert_id = input()
+            clientcert_content = self.receive_cert(clientcert_id)
+            with open(self.client_cert, 'wb') as f:
+                f.write(clientcert_content)
         print('OK')
 
     def run(self):
@@ -104,8 +110,30 @@ class App:
         with open(filename_cert, 'wb') as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
    
+    def send_cert(self):
+        """
+        Sends the certificate to pixeldrain in order to make the handshake
+        :return: The id of the certificate on pixeldrain.
+        """
+        with open(self.node_cert, 'rb') as f:
+            file_content = f.read()
+        r = requests.post('https://pixeldrain.com/api/upload', files={'file':file_content}).json()
+        if r.get('success'):
+            return r.get('id')
+        raise Exception('Could not upload the certificate to pixeldrain')
+
+    def receive_cert(self, id):
+        """
+        Receive a cert from pixeldrain.
+        :param id: The id of the certificate on pixeldrain.
+        :return: The data of the certificate (the file content).
+        """
+        r = requests.get('https://pixeldrain.com/api/file/'+str(id))
+        if r.status_code == 200:
+            return r.content #bytes
+        raise Exception('Could not receive the file with id '+str(id)+' from pixeldrain')
+
 
 if __name__ == '__main__':
     app = App()
     app.run()
-
