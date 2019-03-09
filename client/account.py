@@ -20,12 +20,14 @@ class Account:
     Contains methods to interact with the node, most of them are just wrappers of c-simple's.
     """
 
-    def __init__(self, node_cert=None, client_cert=None, client_key=None):
+    def __init__(self, client_cert=None, client_key=None, node_cert=None):
         self.balance = 0 # The balance is in Satoshis
-        self.node_cert = node_cert
         self.client_cert = client_cert
         self.client_key = client_key
+        self.node_cert = node_cert
         if not (os.path.isfile(self.client_key) and os.path.isfile(self.client_cert)):
+            if os.path.isfile(self.node_cert):
+                os.remove(self.node_cert)
             self.gen_certificate(key_length=4096)
         self.conn = None
 
@@ -36,7 +38,6 @@ class Account:
         key = rsa.generate_private_key(public_exponent=65537, key_size=key_length, backend=default_backend())
         with open(self.client_key, 'wb') as f:
             f.write(key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption()))
-
         subject = issuer = x509.Name([])
         cert = x509.CertificateBuilder().subject_name(
                 subject
@@ -71,7 +72,6 @@ class Account:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.setblocking(1)
             s.connect((host, port))
-
             context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
             context.verify_mode = ssl.CERT_REQUIRED
             context.load_verify_locations(self.node_cert)
@@ -108,7 +108,6 @@ class Account:
         :return: True if payment was completed, False otherwise.
         """
         status = self.conn.root.pay(bolt11, description, amount)
-        print(status)
         if status == 'complete':
             return True
         else:

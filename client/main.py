@@ -116,7 +116,7 @@ class InterfaceManager(BoxLayout):
             self.show_home()
             # If connection succeeded, we store the config for next time
             self.app.config.setall('connection', {
-                'cert_dir': self.cert_dir,
+                'cert_dir': self.app.cert_dir,
                 'ip': ip,
                 'port': port,
             })
@@ -145,15 +145,17 @@ class Csimple(App):
         self.client_cert = os.path.join(self.cert_dir, 'client.pem')
         self.client_key = os.path.join(self.cert_dir, 'client.key')
         self.node_cert = os.path.join(self.cert_dir, 'node.pem')
+        ip = self.config.get('connection', 'ip')
+        port = int(self.config.get('connection', 'port'))
         # The interface to c-simple running on the node
-        self.account = Account(self.node_cert, self.client_cert, self.client_key)
+        self.account = Account(self.client_cert, self.client_key, self.node_cert)
         # ..And trying to connect if nothing changed, so the user doesn't set the parameters again
         try:
             EventLoop.window.bind(on_keyboard=self.key_input)
-            self.account.connect(self.config.get('connection', 'ip'), int(self.config.get('connection', 'port')))
+            self.account.connect(ip, port)
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
-        except:
+        except Exception as e:
             self.interface_manager.show_login()
 
     def build(self):
@@ -165,7 +167,7 @@ class Csimple(App):
         else:
             self.config.add_section('connection')
             self.config.setall('connection', {
-                'cert_dir': '',
+                'cert_dir': 'certs',
                 'ip': '',
                 'port': '8002',
             })
@@ -193,7 +195,6 @@ class Csimple(App):
         with open(self.client_cert, 'rb') as f:
             file_content = f.read()
         r = requests.post('https://pixeldrain.com/api/upload', files={'file':file_content}).json()
-        print(r)
         if r.get('success'):
             return r.get('id')
         raise Exception('Could not upload the certificate to pixeldrain')

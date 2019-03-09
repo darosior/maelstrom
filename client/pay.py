@@ -17,6 +17,7 @@ class Pay(GridLayout):
         :param invoice: (str) the bolt11 invoice.
         """
         try:
+            bolt11 = bolt11.lower()
             decoded = self.manager.app.account.decode_invoice(bolt11)
             # Converting the time until expiration to min and msat to sat
             decoded['expiry'] = int(decoded['expiry'])/60
