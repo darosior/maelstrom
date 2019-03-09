@@ -180,7 +180,7 @@ class Csimple(App):
         if key == 27:
             # If already on the home screen, we close the app
             if hasattr(self.interface_manager.children[0], 'name'):
-                if self.interface_manager.children[0].name == 'home':
+                if self.interface_manager.children[0].name in ('home', 'login'):
                     self.stop()
             # Otherwise we show the home screen (since it is the parent screen of every screens)
             self.interface_manager.show_home()
