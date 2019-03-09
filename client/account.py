@@ -107,11 +107,15 @@ class Account:
         :param description: The payment description.
         :return: True if payment was completed, False otherwise.
         """
-        status = self.conn.root.pay(bolt11, description, amount)
-        if status == 'complete':
-            return True
-        else:
+        try:
+            status = self.conn.root.pay(bolt11, description, amount)
+            if status == 'complete':
+                return True
             return False
+        except Exception as e:
+            if 'Could not find a route' in str(e):
+                raise Exception('Could not find a route, maybe you should check your channels')
+            raise
 
     def get_fees(self, invoice, amount=None):
         """
