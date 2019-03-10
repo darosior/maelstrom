@@ -17,6 +17,9 @@ fi
 # Now that we are in the venv
 MINOR_V=$(python -c 'import sys;print(sys.version_info[1])')
 
+printf "\033[0;34m- Upgrading pip\033[0m\n"
+pip install --upgrade pip
+
 printf "\033[0;34m- Installing Cython (v0.28.2)\033[0m\n"
 pip install -U Cython==0.28.2
 
