@@ -16,8 +16,11 @@ class App:
     """The main class."""
 
     def __init__(self):
-        # Parsing command-line arguments, check for needed directories
         self.args = self.parse_arguments()
+        self.node_cert = os.path.join(self.args.certdir, 'node.pem')
+        self.node_key = os.path.join(self.args.certdir, 'node.key')
+        self.client_cert = os.path.join(self.args.certdir, 'client.pem')
+        
         if not os.path.isdir(self.args.certdir):
             print('The certificates directory isn\'t reconized, creating it. ({})'.format(self.args.certdir))
             os.makedirs(self.args.certdir)
@@ -26,19 +29,19 @@ class App:
             raise Exception('Couldn\'t open the lightning directory specified. (default is ~/.lightning)')
         
         print('Checking server certificate and key.. ', end='')
-        self.node_cert = os.path.join(self.args.certdir, 'node.pem')
-        self.node_key = os.path.join(self.args.certdir, 'node.key')
         if not os.path.isfile(self.node_cert) or not os.path.isfile(self.node_key) or self.args.newcerts:
             print('Generating new ones..')
             self.gen_certificate(4096, self.node_cert, self.node_key)
+            if os.path.isfile(self.client_cert):
+                print('Deleting client certificate too..')
+                os.remove(self.client_cert)
         print('OK')
 
         print('Checking client certificate.. ', end='')
-        self.client_cert = os.path.join(self.args.certdir, 'client.pem')
         if not os.path.isfile(self.client_cert):
             nodecert_id = self.send_cert()
-            print('Client certificate is not present in the certificates directory. Handshake has to be done between this node and your phone, please launch the app and enter the following characters in the appropriate field : ' + str(nodecert_id))
-            print('Enter the characters displayed on the phone : ', end='')
+            print('Client certificate is not present in the certificates directory. Handshake has to be done between this node and your phone, please launch the app and enter the following code : ' + str(nodecert_id))
+            print('Enter the code displayed on the phone (this has to be done FIRST) : ', end='')
             clientcert_id = input()
             clientcert_content = self.receive_cert(clientcert_id)
             with open(self.client_cert, 'wb') as f:
