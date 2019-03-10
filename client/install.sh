@@ -41,10 +41,10 @@ if [ ! -d "$ROOTDIR/libs/garden/garden.zbarcam" ];then
     git clone "https://github.com/darosior/garden.zbarcam" && cd "garden.zbarcam/" && make opencv PYTHON_MINOR_VERSION=$MINOR_V
     cp $ROOTDIR/libs/garden/garden.zbarcam/opencv*/build/lib/cv2.so $VENVDIR/lib/python3.$MINOR_V/site-packages/
     cp $ROOTDIR/libs/garden/garden.zbarcam/opencv*/build/lib/python3/cv2*.so $VENVDIR/lib/python3.$MINOR_V/site-packages/
-    cd $ROOTDIR
+    cd "$ROOTDIR"
 fi
 printf "\033[0;34mCleaning the openCV directory\033[0m\n"
-rm -rf $ROOTDIR/libs/garden/garden.zbarcam/opencv-*
+rm -rf $ROOTDIR/libs/garden/garden.zbarcam/tmp* $ROOTDIR/libs/garden/garden.zbarcam/opencv-*
 
 printf "\033[0;34m- Installing opencv-python\033[0m\n"
 pip install -U opencv-python
