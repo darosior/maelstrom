@@ -7,7 +7,6 @@ from kivy.base import EventLoop
 # UI screens imports
 from home import Home
 from login import Login
-from file_browser import FileBrowser
 from pay import Pay
 from scan import Scan
 from request_payment import RequestPayment
@@ -21,7 +20,6 @@ import requests
 class InterfaceManager(BoxLayout):
     def __init__(self, app, **kwargs):
         self.app = app
-        self.file_chooser = FileBrowser(self)
         self.login = Login(self)
         self.home = Home(self)
         self.pay_widget = Pay(self)

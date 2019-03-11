@@ -20,4 +20,4 @@ apk: desktop
 	. $(VENVDIR)/bin/activate && python3 -m buildozer android debug deploy run
 
 clean:
-	rm -rf venv __pycache__ libs/garden/garden.zbarcam
+	rm -rf .buildozer $$HOME/.buildozer $$HOME/.android venv __pycache__ libs/garden/garden.zbarcam
