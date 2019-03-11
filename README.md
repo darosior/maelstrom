@@ -31,8 +31,8 @@ Dependencies : `python3`, `python3-venv`.
 ```shell
 git clone https://github.com/darosior/c-simple && cd c-simple/c-simple/
 python3 -m venv venv && . venv/bin/activate
-pip install -r requirements
-python3 c-simple.py -i 0.0.0.0
+python3 setup.py install
+python3 -m csimple -i 0.0.0.0
 ```
   
 ### :iphone: Client side
@@ -67,7 +67,7 @@ If you don't use the lightning home default directory, specify it with
 ```shell
 python3 -m csimple -i 0.0.0.0 --lightning-dir /path/to/lightning
 ```
-More to come..
+More is yet to come..
   
   
 ## 📃 Licence, donations
