@@ -20,18 +20,21 @@ import requests
 class InterfaceManager(BoxLayout):
     def __init__(self, app, **kwargs):
         self.app = app
-        self.login = Login(self)
-        self.home = Home(self)
-        self.pay_widget = Pay(self)
-        self.scan_widget = Scan(self)
-        self.scan_widget.ids.zbarcam.ids.xcamera._camera.start()
-        self.request_payment = RequestPayment(self)
+        # To avoid a long loading at app launch, we initialize the screens at None
+        # and then we affect them dinamically (if not self.screen : self.screen = Screen(self))
+        self.login = None
+        self.home = None
+        self.pay_widget = None
+        self.scan_widget = None
+        self.request_payment = None
         super(InterfaceManager, self).__init__(**kwargs)
 
     def show_login(self):
         """
         Shows the login "page".
         """
+        if not self.login:
+            self.login = Login(self)
         self.clear_widgets()
         try:
             cert_id = self.app.send_cert()
@@ -41,13 +44,15 @@ class InterfaceManager(BoxLayout):
             self.login.ids.client_cert.text = '[color=ff3333]' + str(e) + '[/color]'
             # So we add the possibility to the user to re-generate them
             self.login.ids.connect.text = '[color=ff3333]Generate new certificates[/color]'
-            self.login.ids.connect.on_press = self.login.new_certs
+            self.login.ids.connect.on_release = self.login.new_certs
         self.add_widget(self.login)
 
     def show_home(self):
         """
         Shows the homepage
         """
+        if not self.home:
+            self.home = Home(self)
         self.clear_widgets()
         self.add_widget(self.home)
 
@@ -55,6 +60,8 @@ class InterfaceManager(BoxLayout):
         """
         Shows the payment page.
         """
+        if not self.pay_widget:
+            self.pay_widget = Pay(self)
         self.clear_widgets()
         self.add_widget(self.pay_widget)
         self.pay_widget.ids.payment_details.text = ''
@@ -63,7 +70,9 @@ class InterfaceManager(BoxLayout):
         """
         Shows the scan page
         """
-        # To retrieve the camera, see show_pay()
+        if not self.scan_widget:
+            self.scan_widget = Scan(self)
+            self.scan_widget.ids.zbarcam.ids.xcamera._camera.start()
         self.clear_widgets()
         self.add_widget(self.scan_widget)
 
@@ -71,6 +80,8 @@ class InterfaceManager(BoxLayout):
         """
         Shows the request payment page
         """
+        if not self.request_payment:
+            self.request_payment = RequestPayment(self)
         self.clear_widgets()
         self.add_widget(self.request_payment)
 
