@@ -26,8 +26,6 @@ class InterfaceManager(BoxLayout):
         self.scan_widget = Scan(self)
         self.scan_widget.ids.zbarcam.ids.xcamera._camera.start()
         self.request_payment = RequestPayment(self)
-        # Used to determine which cert to store. Not very elegant but functional
-        self.button_pressed = None
         super(InterfaceManager, self).__init__(**kwargs)
 
     def show_login(self):
@@ -35,18 +33,16 @@ class InterfaceManager(BoxLayout):
         Shows the login "page".
         """
         self.clear_widgets()
-        cert_id = self.app.send_cert()
-        self.login.ids.client_cert.text = 'Enter the following number on the node : ' + cert_id
+        try:
+            cert_id = self.app.send_cert()
+            self.login.ids.client_cert.text = 'Enter the following number on the node : ' + cert_id
+        except Exception as e:
+            # There was a problem with cert upload, wether there is no connection or certificates are corrupted
+            self.login.ids.client_cert.text = '[color=ff3333]' + str(e) + '[/color]'
+            # So we add the possibility to the user to re-generate them
+            self.login.ids.connect.text = '[color=ff3333]Generate new certificates[/color]'
+            self.login.ids.connect.on_press = self.login.new_certs
         self.add_widget(self.login)
-
-    def show_fb(self, button_pressed):
-        """
-        Shows the file browser
-        :param button_pressed: The button pressed to access the fb.
-        """
-        self.clear_widgets()
-        self.button_pressed = button_pressed
-        self.add_widget(self.file_chooser)
 
     def show_home(self):
         """
@@ -77,27 +73,6 @@ class InterfaceManager(BoxLayout):
         """
         self.clear_widgets()
         self.add_widget(self.request_payment)
-
-    def load_cert(self, filename):
-        """
-        Save the cert pathname to the application. Changes button text to show the chosen filename.
-        :param filename: The path to the cert file.
-        """
-        if self.button_pressed == 'server cert':
-            self.app.account.server_cert = filename
-            # If multiple selection
-            self.login.ids['server_cert'].text = re.sub(r'\([^)]*\)', '', self.login.ids['server_cert'].text)
-            self.login.ids['server_cert'].text += ' ({})'.format(filename)
-        elif self.button_pressed == 'client cert':
-            self.app.account.client_cert = filename
-            # If multiple selection
-            self.login.ids['client_cert'].text = re.sub(r'\([^)]*\)', '', self.login.ids['client_cert'].text)
-            self.login.ids['client_cert'].text += ' ({})'.format(filename)
-        elif self.button_pressed == 'client key':
-            self.app.account.client_key = filename
-            # If multiple selection
-            self.login.ids['client_key'].text = re.sub(r'\([^)]*\)', '', self.login.ids['client_key'].text)
-            self.login.ids['client_key'].text += ' ({})'.format(filename)
 
     def connect(self):
         """
@@ -192,7 +167,11 @@ class Csimple(App):
         """
         with open(self.client_cert, 'rb') as f:
             file_content = f.read()
+        print('FILE CONTENT')
+        print(file_content)
         r = requests.post('https://pixeldrain.com/api/upload', files={'file':file_content}).json()
+        print('R CONTENT')
+        print(r)
         if r.get('success'):
             return r.get('id')
         raise Exception('Could not upload the certificate to pixeldrain')
