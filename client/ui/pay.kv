@@ -18,7 +18,7 @@
         	text_size: self.size
             halign: 'center'
             valign: 'middle'
-        	on_press: root.manager.show_scan()
+        	on_release: root.manager.show_scan()
     Widget:
 
     Widget:
@@ -46,7 +46,7 @@
             text_size: self.size
             halign: 'center'
             valign: 'middle'
-            on_press: root.manager.show_home()
+            on_release: root.manager.show_home()
     Widget:
 
     Widget:
@@ -77,5 +77,5 @@
         	text_size: self.size
             halign: 'center'
             valign: 'middle'
-        	on_press: root.pay()
+        	on_release: root.pay()
     Widget:

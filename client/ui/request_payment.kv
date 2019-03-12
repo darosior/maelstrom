@@ -49,7 +49,7 @@
         	text_size: self.size
             halign: 'center'
             valign: 'middle'
-        	on_press: root.gen_qrcode()
+        	on_release: root.gen_qrcode()
     Widget:
 
     Widget:
@@ -72,5 +72,5 @@
             text_size: self.size
             halign: 'center'
             valign: 'middle'
-            on_press: root.manager.show_home()
+            on_release: root.manager.show_home()
     Widget:
