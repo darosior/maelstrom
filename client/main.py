@@ -96,8 +96,8 @@ class InterfaceManager(BoxLayout):
         ip = self.login.ids['ip'].text.replace(' ', '')
         try:
             self.app.account.connect(ip, int(port))
-            self.home.update_balance_text()
             self.show_home()
+            self.home.update_balance_text()
             # If connection succeeded, we store the config for next time
             self.app.config.setall('connection', {
                 'cert_dir': self.app.cert_dir,
