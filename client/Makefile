@@ -13,8 +13,8 @@ desktop:
 
 apk: desktop
 	. $(VENVDIR)/bin/activate
-	$(PIP) install https://github.com/darosior/python-for-android/archive/03770626d7a7e8692b6bae442c5387086b2e3ec3.zip
-	$(PIP) install buildozer
+	$(PIP) install https://github.com/kivy/python-for-android/archive/84142eb3dcb564b6e577a46304e11d2497af482a.zip
+	$(PIP) install https://github.com/darosior/buildozer/archive/b835374910e8019667823b19e07ed3962cdba15d.zip
 	export ANDROIDNDK=$$HOME/.buildozer/android/platform/android-ndk-r17c
 	export ANDROIDSDK=$$HOME/.buildozer/android/platform/android-sdk
 	. $(VENVDIR)/bin/activate && python3 -m buildozer android debug deploy run
