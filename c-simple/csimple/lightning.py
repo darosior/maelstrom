@@ -317,8 +317,8 @@ class LightningRpc(UnixDomainSocketRpc):
             "cltv": cltv,
             "fromid": fromid,
             "fuzzpercent": fuzzpercent,
-            "seed": seed,
-            "exclude": exclude
+            "seed": seed
+            #"exclude": exclude
         }
         return self.call("getroute", payload)
 

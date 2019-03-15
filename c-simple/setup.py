@@ -8,7 +8,7 @@ with open('requirements.txt', 'r') as r:
 
 setuptools.setup(
     name='c-simple',
-    version='0.0.1',
+    version='0.0.4',
     license='MIT',
     author='Antoine Poinsot',
     author_email='darosior@protonmail.com',
