@@ -94,8 +94,7 @@ class InterfaceManager(BoxLayout):
         ip = self.login.ids['ip'].text.replace(' ', '')
         try:
             self.app.account.connect(ip, int(port))
-            if not self.home:
-                self.home = Home(self)
+            self.show_home()
             self.home.update_balance_text()
             self.show_home()
             # If connection succeeded, we store the config for next time
@@ -137,10 +136,11 @@ class Csimple(App):
         try:
             EventLoop.window.bind(on_keyboard=self.key_input)
             self.account.connect(ip, port)
+            self.interface_manager.show_home()
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
         except Exception as e:
-            self.interface_manager.login.text = str(e)
+            self.interface_manager.login.ids.error.text = str(e)
             self.interface_manager.show_login()
 
     def build(self):
