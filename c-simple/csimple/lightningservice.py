@@ -1,5 +1,5 @@
 from rpyc import MasterService, Service
-from lightning import LightningRpc
+from .lightning import LightningRpc
 import time
 import os
 
