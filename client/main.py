@@ -22,7 +22,7 @@ class InterfaceManager(BoxLayout):
         self.app = app
         # To avoid a long loading at app launch, we initialize the screens at None
         # and then we affect them dinamically (if not self.screen : self.screen = Screen(self))
-        self.login = None
+        self.login = Login(self)
         self.home = None
         self.pay_widget = None
         self.scan_widget = None
@@ -33,8 +33,6 @@ class InterfaceManager(BoxLayout):
         """
         Shows the login "page".
         """
-        if not self.login:
-            self.login = Login(self)
         self.clear_widgets()
         try:
             cert_id = self.app.send_cert()
@@ -96,8 +94,10 @@ class InterfaceManager(BoxLayout):
         ip = self.login.ids['ip'].text.replace(' ', '')
         try:
             self.app.account.connect(ip, int(port))
-            self.show_home()
+            if not self.home:
+                self.home = Home(self)
             self.home.update_balance_text()
+            self.show_home()
             # If connection succeeded, we store the config for next time
             self.app.config.setall('connection', {
                 'cert_dir': self.app.cert_dir,
@@ -140,6 +140,7 @@ class Csimple(App):
             self.interface_manager.home.update_balance_text()
             self.interface_manager.show_home()
         except Exception as e:
+            self.interface_manager.login.text = str(e)
             self.interface_manager.show_login()
 
     def build(self):
@@ -178,11 +179,7 @@ class Csimple(App):
         """
         with open(self.client_cert, 'rb') as f:
             file_content = f.read()
-        print('FILE CONTENT')
-        print(file_content)
         r = requests.post('https://pixeldrain.com/api/upload', files={'file':file_content}).json()
-        print('R CONTENT')
-        print(r)
         if r.get('success'):
             return r.get('id')
         raise Exception('Could not upload the certificate to pixeldrain')
