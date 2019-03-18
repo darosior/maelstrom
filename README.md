@@ -37,6 +37,7 @@ python3 -m csimple -i 0.0.0.0
   
 ### :iphone: Client side
 #### First method : from apk
+[Link to the play store](https://play.google.com/store/apps/details?id=darosior.csimple), 
 [Link to the apk](https://github.com/darosior/c-simple/releases/download/v0.0.1/csimple-0.0.1-release-signed-aligned.apk), [link to the release](https://github.com/darosior/c-simple/releases/tag/v0.0.1).
   
 #### Second method : build with Docker
