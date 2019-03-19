@@ -108,13 +108,12 @@ class Account:
         :return: True if payment was completed, False otherwise.
         """
         try:
-            status = self.conn.root.pay(bolt11, description, amount)
-            if status == 'complete':
-                return True
-            return False
+            return self.conn.root.pay(bolt11, description, amount)
         except Exception as e:
             if 'Could not find a route' in str(e):
                 raise Exception('Could not find a route, maybe you should check your channels')
+            if '\'failcode\': 4103' in str(e):
+                raise Exception('Got a "WIRE_TEMPORARY_CHANNEL_FAILURE" error. You can try to make the sender generate another invoice or open new channels.')
             raise
 
     def get_fees(self, invoice, amount=None):
