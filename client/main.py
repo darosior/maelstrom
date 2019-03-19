@@ -65,8 +65,8 @@ class InterfaceManager(BoxLayout):
         if not self.pay_widget:
             self.pay_widget = Pay(self)
         self.clear_widgets()
-        self.add_widget(self.pay_widget)
         self.pay_widget.ids.payment_details.text = ''
+        self.add_widget(self.pay_widget)
 
     def show_scan(self):
         """
@@ -139,10 +139,14 @@ class Csimple(App):
         # ..And trying to connect if nothing changed, so the user doesn't set the parameters again
         try:
             EventLoop.window.bind(on_keyboard=self.key_input)
-            self.account.connect(ip, port)
-            self.interface_manager.show_home()
-            self.interface_manager.home.update_balance_text()
-            self.interface_manager.show_home()
+            if os.path.isfile(self.node_cert):
+                self.account.connect(ip, port)
+                self.interface_manager.show_home()
+                self.interface_manager.home.update_balance_text()
+                self.interface_manager.show_home()
+            else:
+                # This case is likely to be the first launch, no need for error
+                self.interface_manager.show_login()
         except Exception as e:
             self.interface_manager.login.ids.error.text = str(e)
             self.interface_manager.show_login()

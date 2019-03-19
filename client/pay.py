@@ -42,7 +42,7 @@ class Pay(GridLayout):
             try:
                 confirmed = self.manager.app.account.pay(self.bolt11, self.invoice_desc)
                 if confirmed:
-                    self.ids.payment_details.text = 'Success !'
+                    self.ids.payment_details.text = '[size=22sp][b][color=00B808]Success ![/color][/b][/size]'
                 else:
                     self.ids.payment_details.text = 'Something went wrong, maybe you should try again'
             except Exception as e:
