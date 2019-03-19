@@ -4,6 +4,7 @@ kivy.require('1.10.1')
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.base import EventLoop
+from kivy import platform
 # UI screens imports
 from home import Home
 from login import Login
@@ -51,6 +52,9 @@ class InterfaceManager(BoxLayout):
         """
         if not self.home:
             self.home = Home(self)
+        if platform == 'android':
+                from android.permissions import request_permissions, Permission
+                request_permissions([Permission.CAMERA,Permission.CAPTURE_VIDEO_OUTPUT])
         self.clear_widgets()
         self.add_widget(self.home)
 
