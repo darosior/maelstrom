@@ -78,6 +78,8 @@ class LightningService(Service):
         :param amount: An amount (in msatoshis) to pay, only needed if amount is not in bolt11.
         :return: The status of the payment. Whether 'pending', 'complete', 'failed' (or any lightning-cli error).
         """
+        if 'lightning:' in bolt11:
+            bolt11 = bolt11[10:]
         if bolt11[:2] != 'ln':
             raise Exception('Invoice is malformed')
         decoded_bolt = self.l.decodepay(bolt11)
