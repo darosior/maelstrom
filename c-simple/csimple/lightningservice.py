@@ -42,19 +42,6 @@ class LightningService(Service):
             dir = '.'
         return os.path.join(dir, "lightning-rpc")
 
-    def check_payment_status(self, hash):
-        """
-        Checks the status of the payment using listpayments.
-
-        :return: The status of the payment ('pending', 'complete', 'failed'). None if not found.
-        """
-        for payment in self.l.listpayments()["payments"]:
-            if payment.get('payment_hash') == hash:
-                return payment.get('status')
-        return None
-
-    # Exposed functions
-
     def exposed_get_balance(self):
         """
         Calls listfunds and returns a dictionnary with two entries.
@@ -99,13 +86,16 @@ class LightningService(Service):
             raise Exception("You have to specify an amount")
         payee = decoded_bolt['payee'] # Public key
         hash = decoded_bolt['payment_hash']
-        route = self.l.getroute(payee, amount, 1)
-        self.l.sendpay(route['route'], hash)#, description)
-        payment_status = self.check_payment_status(hash)
-        while payment_status == 'pending':
-            payment_status = self.check_payment_status(hash)
-            time.sleep(1)
-        return payment_status
+        riskfactor = 5
+        while True:
+            route = self.l.getroute(payee, amount, riskfactor)
+            self.l.sendpay(route['route'], hash)
+            if self.l.waitsendpay(hash).get('status'):
+                return True
+            if riskfactor <= 20:
+                riskfactor += 5
+            else:
+                return False
 
     def exposed_get_fees(self, bolt11, amount=None):
         """
