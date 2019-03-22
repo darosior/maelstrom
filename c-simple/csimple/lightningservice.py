@@ -53,11 +53,10 @@ class LightningService(Service):
         onchain = {}
         onchannel = {}
         for o in funds['outputs']:
-            if o['output'] > 0:
-                if o['address'] in onchain:
-                    onchain[o['address']] += int(o['value'])
-                else:
-                    onchain[o['address']] = int(o['value'])
+            if o['address'] in onchain:
+                onchain[o['address']] += int(o['value'])
+            else:
+                onchain[o['address']] = int(o['value'])
         for c in funds['channels']:
             # It mays be no short id (i.e if funding tx isn't confirmed yet)
             if 'short_channel_id' in c.keys():
