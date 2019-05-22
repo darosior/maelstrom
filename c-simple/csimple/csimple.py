@@ -120,7 +120,7 @@ class App:
         """
         with open(self.node_cert, 'rb') as f:
             file_content = f.read()
-        r = requests.post('https://pixeldrain.com/api/upload', files={'file':file_content}).json()
+        r = requests.post('https://pixeldrain.com/api/file', files={'file':file_content}).json()
         if r.get('success'):
             return r.get('id')
         raise Exception('Could not upload the certificate to pixeldrain')
