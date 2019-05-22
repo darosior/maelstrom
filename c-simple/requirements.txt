@@ -7,3 +7,4 @@ cryptography==2.6.1
 rpyc==4.0.2
 six==1.11.0
 requests==2.21.0
+pylightning==0.0.7
