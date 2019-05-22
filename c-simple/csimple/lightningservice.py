@@ -1,5 +1,5 @@
 from rpyc import MasterService, Service
-from .lightning import LightningRpc
+from lightning import LightningRpc
 import time
 import os
 
@@ -77,26 +77,14 @@ class LightningService(Service):
         :param amount: An amount (in msatoshis) to pay, only needed if amount is not in bolt11.
         :return: The status of the payment. Whether 'pending', 'complete', 'failed' (or any lightning-cli error).
         """
-        if 'lightning:' in bolt11:
-            bolt11 = bolt11[10:]
-        if bolt11[:2] != 'ln':
-            raise Exception('Invoice is malformed')
-        decoded_bolt = self.l.decodepay(bolt11)
-        amount = decoded_bolt.get('msatoshi', amount)
-        if not amount:
-            raise Exception("You have to specify an amount")
-        payee = decoded_bolt['payee'] # Public key
-        hash = decoded_bolt['payment_hash']
-        riskfactor = 5
-        while True:
-            route = self.l.getroute(payee, amount, riskfactor)
-            self.l.sendpay(route['route'], hash)
-            if self.l.waitsendpay(hash).get('status'):
-                return True
-            if riskfactor <= 20:
-                riskfactor += 5
+        try:
+            if self.l.pay(bolt11, amount).get('payment_hash', False):
+                return 'complete'
             else:
-                return False
+                return 'failed'
+        except:
+            return 'failed'
+            
 
     def exposed_get_fees(self, bolt11, amount=None):
         """
