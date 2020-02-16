@@ -1,10 +1,13 @@
 import kivy
 
-from home import Home
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.base import EventLoop
 from kivy import platform
+from threading import Thread
+
+from home import Home
+from startup import Startup
 
 kivy.require('2.0.0')
 
@@ -12,16 +15,15 @@ kivy.require('2.0.0')
 class InterfaceManager(BoxLayout):
     def __init__(self, app, **kwargs):
         self.app = app
-        # FIXME: remember why initializing this dynamically
-        self.home = None
+        # The views need a reference to their master, e.g. for switching them
+        self.home = Home(self)
+        self.startup = Startup(self)
         super(InterfaceManager, self).__init__(**kwargs)
 
     def show_home(self):
         """
-        Shows the homepage
+        Shows the homepage.
         """
-        if not self.home:
-            self.home = Home(self)
         if platform == 'android':
             from android.permissions import request_permissions, Permission
             request_permissions([Permission.CAMERA,
@@ -29,16 +31,24 @@ class InterfaceManager(BoxLayout):
         self.clear_widgets()
         self.add_widget(self.home)
 
+    def show_startup(self):
+        """
+        Shows the startup page, and start lightningd.
+        """
+        self.clear_widgets()
+        self.add_widget(self.startup)
+
 
 class Csimple(App):
     def __init__(self, **kwargs):
         super(Csimple, self).__init__(**kwargs)
         self.interface_manager = InterfaceManager(self, orientation='vertical')
-        try:
-            EventLoop.window.bind(on_keyboard=self.key_input)
-            self.interface_manager.show_home()
-        except Exception as e:
-            self.interface_manager.login.ids.error.text = str(e)
+        self.lightningd_proc = None
+        EventLoop.window.bind(on_keyboard=self.key_input)
+        self.interface_manager.show_startup()
+        # A hack to actually show the startup screen...
+        Thread(target=self.interface_manager.startup.start_lightningd,
+               args=(self.lightningd_proc,)).start()
 
     def build(self):
         return self.interface_manager
