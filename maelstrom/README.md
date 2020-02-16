@@ -15,3 +15,15 @@ pip install -r requirements.txt
 ```bash
 python3 main.py
 ```
+
+### Build the apk (debug)
+
+```bash
+pip install buildozer==1.0
+buildozer debug
+# If you want to directly start it on a connected phone
+buildozer debug deploy run
+```
+You can build for other archs by tweaking with the buildozer.spec, it's really
+straightforward (it's the all-in-one config file for the whole Kivy toolchain
+and especially its most tricky part, python-for-android)
