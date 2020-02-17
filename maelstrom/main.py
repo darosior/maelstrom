@@ -9,7 +9,7 @@ from threading import Thread
 from home import Home
 from startup import Startup
 
-kivy.require('2.0.0')
+# kivy.require('2.0.0')
 
 
 class InterfaceManager(BoxLayout):
